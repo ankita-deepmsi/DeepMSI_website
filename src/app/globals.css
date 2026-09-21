@@ -1,26 +1,1861 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   AI-SPECTRAL — Design System
+   Navy (#042e76) and near-black ink + gold (#B8860B) into a
+   premium medical-tech aesthetic: spectral gradients, glass,
+   serif display + Inter body + mono data readouts.
+   ============================================================ */
+
+@theme {
+  /* ---- Brand: Navy ---- */
+  --color-navy-50: #edf3fc;
+  --color-navy-100: #d0ddf4;
+  --color-navy-200: #a4bde9;
+  --color-navy-300: #6a92d8;
+  --color-navy-400: #2855a2;
+  --color-navy-500: #0d3c8d;
+  --color-navy-600: #042e76;
+  --color-navy-700: #072861;
+  --color-navy-800: #0b244f;
+  --color-navy-900: #0e2141;
+  --color-navy-950: #04122a;
+
+  /* ---- Accent: Spectral Gold ---- */
+  --color-gold-50: #fbf6e9;
+  --color-gold-100: #f5e7c2;
+  --color-gold-200: #ecce82;
+  --color-gold-300: #e0b450;
+  --color-gold-400: #d29e2f;
+  --color-gold-500: #b8860b;
+  --color-gold-600: #9a6f0a;
+  --color-gold-700: #7a560c;
+  --color-gold-800: #634610;
+  --color-gold-900: #543c12;
+
+  /* ---- Ink: near-black canvas for premium dark bands ---- */
+  --color-ink-50: #f4f5f8;
+  --color-ink-100: #e4e7ed;
+  --color-ink-700: #0d1b33;
+  --color-ink-800: #091323;
+  --color-ink-900: #060d19;
+  --color-ink-950: #03070e;
+
+  /* ---- Clinical signal colors (mirrors the imaging software) ---- */
+  --color-signal-red: #cc3333;
+  --color-signal-violet: #5a4ea0;
+
+  /* ---- Typography ---- */
+  /* One typeface for all UI and headings; mono is reserved for numeric
+     readouts (wavelengths, specs). --font-display is kept as an alias so the
+     existing `font-display` utility keeps working. */
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-data), ui-monospace, "SFMono-Regular", monospace;
+
+  /* ---- Motion tokens ---- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- Animations exposed as utilities ---- */
+  --animate-spectral-pan: spectral-pan 14s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-aurora: aurora 18s ease-in-out infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-pulse-ring: pulse-ring 3.2s ease-out infinite;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-scan: scan 4.5s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes spectral-pan {
+  to {
+    background-position: 200% 0;
+  }
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(4%, -3%) scale(1.12);
+    opacity: 0.8;
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
+@keyframes scan {
+  0%,
+  100% {
+    top: 6%;
+  }
+  50% {
+    top: 92%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   Base
+   ============================================================ */
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #091323;
+    /* Wavelength spectrum used throughout the brand */
+    --spectral: linear-gradient(
+      90deg,
+      #6d28d9 0%,
+      #2563eb 16%,
+      #06b6d4 32%,
+      #0b7285 48%,
+      #10b981 62%,
+      #eab308 78%,
+      #f97316 90%,
+      #ef4444 100%
+    );
+  }
+
+  * {
+    border-color: color-mix(in oklab, var(--color-ink-900) 12%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-navy-600) 30%, transparent);
+    color: var(--color-ink-900);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--color-ink-900);
+  }
+
+  /* Accessible focus */
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-navy-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Respect reduced motion globally for CSS-driven ambient motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+@layer utilities {
+  /* Page gutter container */
+  .container-x {
+    width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .container-x {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* The signature wavelength text gradient */
+  .text-spectral {
+    background: var(--spectral);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-spectral-pan);
+  }
+
+  .text-gradient-navy {
+    background: linear-gradient(
+      100deg,
+      var(--color-navy-700),
+      var(--color-navy-400) 60%,
+      var(--color-gold-400)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Spectrum bar / divider */
+  .bg-spectral {
+    background: var(--spectral);
+    background-size: 200% 100%;
+    animation: var(--animate-spectral-pan);
+  }
+
+  /* Glassmorphism surfaces */
+  .glass {
+    background: color-mix(in oklab, white 72%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid color-mix(in oklab, white 60%, transparent);
+  }
+  .glass-dark {
+    background: color-mix(in oklab, var(--color-ink-900) 55%, transparent);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid color-mix(in oklab, white 12%, transparent);
+  }
+
+  /* Hairline gold/navy ring used on premium cards */
+  .ring-premium {
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, white 70%, transparent) inset,
+      0 24px 60px -28px color-mix(in oklab, var(--color-navy-900) 55%, transparent);
+  }
+
+  /* Subtle film grain / noise for premium depth */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Animated dashed/scan accents */
+  .shimmer {
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      color-mix(in oklab, var(--color-gold-300) 70%, transparent) 50%,
+      transparent 80%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
+    mask-image: linear-gradient(to bottom, black 70%, transparent);
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 12%,
+      black 88%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 12%,
+      black 88%,
+      transparent
+    );
+  }
+}
+
+/* ============================================================
+   Article prose (News / Reports) — typographic refinement
+   ============================================================ */
+.prose-spectral {
+  --tw-prose-body: #1e2736;
+  --tw-prose-headings: var(--color-ink-900);
+  --tw-prose-links: var(--color-navy-700);
+  --tw-prose-bold: var(--color-ink-900);
+  --tw-prose-quotes: var(--color-navy-800);
+  --tw-prose-quote-borders: var(--color-gold-400);
+  --tw-prose-bullets: var(--color-navy-400);
+  --tw-prose-counters: var(--color-navy-600);
+  --tw-prose-hr: color-mix(in oklab, var(--color-ink-900) 12%, transparent);
+  --tw-prose-th-borders: color-mix(in oklab, var(--color-ink-900) 18%, transparent);
+  --tw-prose-td-borders: color-mix(in oklab, var(--color-ink-900) 10%, transparent);
+}
+.prose-spectral :where(h2, h3) {
+  scroll-margin-top: 6rem;
+}
+
+/* Shared editorial language: precise typography, quiet surfaces, spectral detail. */
+:root { --site-line: #dcdfe5; --site-muted: #464d5b; --site-accent: #04255d; }
+.site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 60; background: #fff; border-bottom: 1px solid var(--site-line); }
+.header-note { background: #eef0f3; color: #424b5b; font-size: .625rem; letter-spacing: .12em; }
+.header-note > div { display: flex; justify-content: space-between; gap: 1rem; padding-block: .45rem; }
+.header-note span:last-child { letter-spacing: .02em; }
+.header-audiences { display: flex; gap: 1.5rem; }
+.header-audiences a { letter-spacing: .12em; }
+.header-audiences a:hover, .header-audiences a[aria-current] { color: #032154; text-decoration: underline; text-underline-offset: 3px; }
+.main-nav { display: flex; align-items: center; gap: 2rem; height: 4.7rem; }
+.brand-link { flex-shrink: 0; margin-right: auto; }
+.brand-link img { width: 10.5rem; height: auto; }
+.desktop-nav { display: flex; align-items: center; gap: 1.4rem; }
+.nav-group { position: relative; }
+.nav-group-heading { display: flex; align-items: center; gap: .2rem; font-size: .875rem; color: #293345; }
+.nav-group-heading a { padding-block: 1rem; }
+.nav-group-heading a[aria-current], .nav-group-heading a:hover { color: #03296c; }
+.nav-group-heading button { padding: .7rem .25rem; cursor: pointer; }
+.nav-group-heading button[aria-expanded="true"] svg { transform: rotate(180deg); }
+.nav-dropdown { position: absolute; top: calc(100% + .4rem); left: -1rem; padding: 1rem; width: 20rem; background: #fff; border: 1px solid var(--site-line); box-shadow: 0 15px 40px #04122a18; border-radius: 4px; }
+.nav-dropdown > p { padding: .5rem .7rem .8rem; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: #59606b; }
+.nav-dropdown > a { display: block; padding: .8rem .7rem; }
+.nav-dropdown > a:hover { background: #eff2f6; }
+.nav-dropdown strong { display: block; font-size: .875rem; font-weight: 500; }
+.nav-dropdown span { display: block; margin-top: .3rem; font-size: .8125rem; line-height: 1.5; color: #464d5b; }
+.mobile-toggle { display: none; }
+.mobile-navigation { display: none; }
+.section-space { padding-block: 6rem; }
+.editorial-heading-row { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start; margin-bottom: 3rem; }
+.editorial-heading-row .editorial-label { padding-top: .65rem; }
+.editorial-heading-row h2, .section-title-row h2, .science-layout h2 { font-size: clamp(2.2rem, 3.6vw, 3.5rem); line-height: 1.13; font-weight: 600; letter-spacing: -.04em; }
+.focus-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.focus-path { display: flex; flex-direction: column; background: #eef0f4; border: 1px solid #dbdfe6; border-radius: 3px;
+  overflow: hidden; transition: border-color .2s, background .2s, box-shadow .3s; }
+.focus-path:hover { background: #e7eaf0; border-color: #828fa6; box-shadow: 0 20px 46px -28px #0b1a3366; }
+.focus-path-industry { background: #f4f4f0; border-color: #e5e4dc; }
+.focus-path-industry:hover { background: #eeeee6; border-color: #b4b09b; }
+
+/* Both door images are dark renders on near-black, so they get their own ground
+   at the top of the card rather than being set on the light panel, where they
+   would read as a smudge. The eyebrow row rides on the image instead of
+   repeating beneath it — the dark window is what makes it legible in white. */
+.focus-path-media { position: relative; height: clamp(10rem, 17vw, 15rem); background: #03070e; overflow: hidden; }
+.focus-path-img { object-fit: cover; transform: scale(1.01); transition: transform .8s var(--ease-out-expo); }
+.focus-path:hover .focus-path-img { transform: scale(1.06); }
+/* light.png's optical train sits at roughly y 20-65%, with an annotation panel
+   of unconfirmed specifications below it from about 66% down. Anchoring the
+   crop to the top keeps the train and cuts the panel at every width the two
+   cards are side by side — verified from 1200px up. The source file still
+   contains it, so anyone fetching /light.png directly still sees it. */
+.focus-path-industry .focus-path-img { object-position: center top; }
+.focus-path-media::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, #03070ee8 0%, #03070e75 32%, transparent 60%); }
+
+.focus-path-top { position: absolute; z-index: 2; left: 1.75rem; right: 1.75rem; bottom: 1.35rem;
+  display: flex; align-items: center; gap: 1rem; color: #fff; }
+.focus-path-top span { font-size: .75rem; letter-spacing: .12em; }
+.path-arrow { margin-left: auto; transition: transform .2s; }
+.focus-path:hover .path-arrow { transform: translate(3px, -3px); }
+
+/* The rule under each window. The clinical door gets a cool data ramp drawn from
+   the platform layer colours; the optical door gets the full dispersion, which
+   is the same spectrum the prism in its own image is throwing. */
+.focus-path-rule { height: 2px; flex-shrink: 0; opacity: .82; transition: opacity .3s;
+  background: linear-gradient(90deg, #19c39a, #3fa0e8 55%, #9d7cf5); }
+.focus-path-industry .focus-path-rule { background: var(--spectral); }
+.focus-path:hover .focus-path-rule { opacity: 1; }
+
+.focus-path-body { display: flex; flex-direction: column; flex: 1; padding: 2.25rem 2.5rem 2.5rem; }
+.focus-path h3 { font-size: clamp(1.8rem, 2.6vw, 2.5rem); line-height: 1.17; font-weight: 600; letter-spacing: -.03em; }
+.focus-path-body > p { max-width: 27rem; margin-top: 1.25rem; font-size: 1rem; line-height: 1.8; color: #464d5b; }
+.path-link { display: flex; align-items: center; gap: 1rem; margin-top: 2rem; color: #102549; font-size: .9375rem; font-weight: 500; }
+/* Pinned to the foot so the two cards' notes line up despite unequal copy. */
+.path-note { display: block; margin-top: auto; padding-top: 1.25rem; border-top: 1px solid #152b501c; font-size: .75rem; color: #525963; }
+.platform-section { background: #06132a; color: #d8dde5; }
+.platform-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 6rem; align-items: center; }
+.platform-section .editorial-label { color: #a3b1c8; }
+.platform-story h2 { margin-top: 1.6rem; font-size: clamp(2.8rem, 4.5vw, 4.6rem); line-height: 1.08; letter-spacing: -.045em; color: white; font-weight: 600; }
+.platform-story h2 em { color: #bcc5d5; font-weight: 600; }
+.platform-story > p:not(.editorial-label):not(.platform-status) { margin-top: 1.5rem; font-size: 1rem; line-height: 1.9; color: #b5bdcb; max-width: 27rem; }
+.platform-points { display: grid; gap: 1rem; margin-block: 2rem; font-size: .9375rem; }
+.platform-points li { display: flex; align-items: center; gap: .75rem; }
+.platform-points svg { color: #b7c891; }
+.platform-section .editorial-button { background: #dcebc4; color: #111f36; }
+.platform-section .editorial-button:hover { background: #ecf5dc; }
+.platform-status { font-size: .75rem; line-height: 1.8; color: #a3acbc; margin-top: 1.5rem; max-width: 26rem; }
+.platform-plate { padding: 1.6rem; background: #040f22; border: 1px solid #ffffff1b; border-radius: 3px; }
+.plate-label { display: flex; justify-content: space-between; gap: 1rem; font-size: .625rem; font-weight: 500; letter-spacing: .07em; color: #a2aab8; padding-bottom: 1.4rem; }
+.sample-series { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 1rem; }
+.sample-series figure > div { position: relative; aspect-ratio: 1.3; background: black; overflow: hidden; }
+.sample-series img { object-fit: cover; }
+.sample-series figcaption { display: flex; justify-content: space-between; gap: .5rem; align-items: center; margin-top: .7rem; font-family: var(--font-mono); font-size: .8125rem; }
+.sample-series figcaption small, .sample-series figcaption > span:last-child { font-size: .5625rem; color: #a9b1be; }
+.platform-plate > p { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid #ffffff18; font-size: .75rem; line-height: 1.7; color: #9fa8b7; }
+.section-title-row { display: flex; justify-content: space-between; gap: 2rem; align-items: flex-end; margin-bottom: 3rem; }
+.section-title-row h2 { margin-top: 1.5rem; }
+.instrument-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--site-line); }
+.instrument-card { display: flex; flex-direction: column; padding: 2rem; transition: background .2s; }
+.instrument-card + .instrument-card { border-left: 1px solid var(--site-line); }
+.instrument-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.instrument-grid-2 .instrument-card:nth-child(2n + 1) { border-left: 0; }
+.instrument-grid-2 .instrument-card:nth-child(n + 3) { border-top: 1px solid var(--site-line); }
+.instrument-card:hover { background: #f3f4f7; }
+.instrument-icon { display: flex; align-items: center; justify-content: space-between; color: #1e355d; margin-bottom: 2.5rem; }
+.instrument-icon svg:last-child { width: 1.1rem; color: #59616e; }
+.instrument-card .editorial-label { font-size: .6875rem; letter-spacing: .1em; }
+.instrument-card h3 { margin-top: .75rem; font-size: 1.8rem; line-height: 1.2; font-weight: 600; letter-spacing: -.035em; }
+.instrument-description { margin-top: 1rem; font-size: 1rem; color: #464d5b; line-height: 1.8; flex: 1; }
+.instrument-detail { margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--site-line); font-size: .75rem; color: #525b69; line-height: 1.6; }
+.science-section { border-top: 1px solid var(--site-line); background: #f6f7f9; }
+.science-layout { display: grid; grid-template-columns: 1fr 1.15fr; gap: 6rem; }
+.science-layout h2 { margin-top: 1.5rem; font-size: clamp(2rem, 3.1vw, 3rem); }
+.science-intro { font-size: 1rem; line-height: 1.8; color: #464d5b; max-width: 25rem; margin-block: 1.5rem 2rem; }
+.science-links > a { display: flex; gap: 1.25rem; padding-block: 1.7rem; border-bottom: 1px solid #d4d8df; }
+.science-links > a:first-child { border-top: 1px solid #d4d8df; }
+.science-links > a > div { flex: 1; }
+.resource-number { color: #525c6e; font-family: var(--font-mono); font-size: .75rem; padding-top: .15rem; }
+.science-links p { color: #3c4c66; font-size: .6875rem; letter-spacing: .12em; }
+.science-links h3 { font-size: 1.45rem; line-height: 1.3; margin-top: .65rem; font-weight: 600; }
+.science-links a:hover h3 { color: #03296c; }
+.science-links div > span { display: block; font-size: .8125rem; color: #565d69; margin-top: .6rem; line-height: 1.6; }
+.science-links svg { color: #37465f; flex-shrink: 0; }
+.contact-band { background: #e4e7ed; padding-block: 4.5rem; border-top: 1px solid #d1d6df; }
+.contact-band-layout { display: flex; align-items: center; justify-content: space-between; gap: 3rem; }
+.contact-band h2 { font-size: clamp(2rem, 3.6vw, 3.5rem); line-height: 1.14; font-weight: 600; max-width: 46rem; margin-top: 1.2rem; }
+.contact-band p:not(.editorial-label) { max-width: 36rem; font-size: 1rem; line-height: 1.8; color: #444c5a; margin-top: 1rem; }
+.contact-band-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; flex-shrink: 0; }
+.email-draft { margin-top: 1.5rem; padding: 1.5rem; border: 1px solid #a6b3c9; border-radius: 4px; background: #eff2f7; color: #12203a; }
+.email-draft h3 { font-size: 1.5rem; }
+.email-draft p { font-size: .875rem; line-height: 1.7; margin-top: .75rem; }
+.email-draft textarea { margin-top: 1rem; width: 100%; padding: 1rem; border: 1px solid #b8c0cf; background: white; border-radius: 3px; font-size: .875rem; min-height: 13rem; resize: vertical; }
+.email-draft-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+.email-draft-actions button { padding: .8rem 1rem; border: 1px solid #9ca8bc; border-radius: 3px; font-size: .875rem; cursor: pointer; }
+.editorial-footer { background: white; border-top: 1px solid var(--site-line); padding-top: 4rem; }
+.footer-main { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 2.5rem; }
+@media (max-width: 1199px) { .footer-main { grid-template-columns: 1fr 1fr 1fr; } .footer-brand { grid-column: 1 / -1; } }
+.footer-brand img { width: 11rem; height: auto; }
+.footer-brand p { font-size: 1.15rem; line-height: 1.7; color: #222e41; margin-top: 1.3rem; letter-spacing: -.02em; }
+.footer-brand > span { display: block; font-size: .8125rem; color: #565d6a; margin-top: 1rem; }
+.footer-email { display: flex; align-items: center; gap: .5rem; font-size: .875rem; color: #142f5d; margin-top: .8rem; }
+.footer-main h3 { font-family: var(--font-sans); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #565d6a; font-weight: 500; }
+.footer-main ul { display: grid; gap: .9rem; margin-top: 1.5rem; font-size: .875rem; color: #2d394d; }
+.footer-main a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.footer-updates { display: flex; justify-content: space-between; align-items: center; gap: 3rem; padding-block: 2rem; margin-top: 3rem; border-top: 1px solid var(--site-line); }
+.footer-updates h3 { font-size: 1.9rem; font-weight: 600; }
+.footer-updates p { font-size: .875rem; color: #464e5e; margin-top: .5rem; line-height: 1.6; }
+.newsletter-composer { width: 24rem; max-width: 100%; }
+.newsletter-composer form { display: flex; border-bottom: 1px solid #526078; }
+.newsletter-composer input { flex: 1; width: 0; min-width: 0; padding: .8rem .3rem; font-size: 1rem; }
+.newsletter-composer button { width: 3rem; display: grid; place-items: center; color: #0c2a5e; cursor: pointer; }
+.newsletter-composer > p { font-size: .75rem; }
+.newsletter-composer a { text-decoration: underline; }
+.footer-notice { border-top: 1px solid var(--site-line); padding-block: 1.5rem; color: #555d6b; font-size: .75rem; line-height: 1.9; }
+.footer-bottom { border-top: 1px solid var(--site-line); padding-block: 1.5rem; display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; color: #4e5766; }
+.inner-page-hero h1 { font-weight: 600; letter-spacing: -.04em; }
+.plate-label, .sample-series figcaption small, .sample-series figcaption > span:last-child, .header-note, .instrument-card .editorial-label, .science-links p { font-size: .75rem; }
+.sample-series figcaption { flex-wrap: wrap; }
+@media (max-width: 1199px) {
+  .desktop-nav { display: none; }
+  .mobile-toggle { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; cursor: pointer; }
+  .mobile-navigation { display: block; position: absolute; top: 100%; left: 0; right: 0; background: white; padding: 1.5rem 2rem 2.5rem; max-height: calc(100dvh - 6.5rem); overflow-y: auto; overscroll-behavior: contain; border-bottom: 1px solid var(--site-line); }
+  .mobile-group { padding: .8rem 0; border-bottom: 1px solid var(--site-line); }
+  .mobile-group > a { display: flex; justify-content: space-between; gap: 1rem; font-size: 1.125rem; padding: .4rem 0; }
+  .mobile-group > div { display: grid; padding: .5rem 0; gap: .3rem; }
+  .mobile-group > div > a { font-size: .9375rem; padding: .55rem .8rem; color: #464d5b; }
+  .mobile-audiences { display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: .8125rem; letter-spacing: .1em; text-transform: uppercase; color: #424b5b; }
+  .mobile-navigation > .editorial-button { margin-top: 1.5rem; }
+  .platform-layout, .science-layout { gap: 3rem; }
+}
+@media (max-width: 767px) {
+  .header-note { display: none; }
+  .main-nav { height: 4.5rem; gap: 1rem; }
+  .brand-link img { width: 8.4rem; }
+  .mobile-navigation { max-height: calc(100dvh - 4.5rem); padding-inline: 1.25rem; }
+  .section-space { padding-block: 3.5rem; }
+  .editorial-heading-row { grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 2rem; }
+  .focus-grid, .platform-layout, .instrument-grid, .science-layout { grid-template-columns: 1fr; }
+  .focus-path-body { padding: 1.6rem; }
+  .focus-path-media { height: clamp(6.5rem, 30vw, 13rem); }
+  .focus-path-top { left: 1.6rem; right: 1.6rem; bottom: 1.1rem; }
+  .focus-path h3 { font-size: 2rem; }
+  .platform-layout, .science-layout { gap: 2.5rem; }
+  .platform-story h2 { font-size: 3rem; }
+  .platform-plate { padding: 1rem; }
+  .plate-label { font-size: .5rem; gap: .5rem; }
+  .sample-series { gap: 1rem .7rem; }
+  .sample-series figcaption > span:last-child { font-size: .45rem; }
+  .section-title-row { align-items: flex-start; flex-direction: column; }
+  .instrument-card { padding: 1.75rem; }
+  .instrument-card + .instrument-card { border-left: 0; border-top: 1px solid var(--site-line); }
+  .instrument-icon { margin-bottom: 1.5rem; }
+  .science-links > a { gap: .8rem; }
+  .science-links h3 { font-size: 1.25rem; }
+  .contact-band { padding-block: 3.5rem; }
+  .contact-band-layout { flex-direction: column; align-items: flex-start; gap: 2rem; }
+  .footer-main { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .footer-brand { grid-column: 1 / -1; }
+  .footer-updates { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .newsletter-composer { width: 100%; }
+  .footer-bottom { flex-direction: column; gap: .5rem; }
+  .plate-label { font-size: .75rem; flex-wrap: wrap; }
+  .sample-series figcaption > span:last-child { font-size: .75rem; }
+}
+html { scroll-padding-top: 7rem; }
+section[id], div[id] { scroll-margin-top: 7rem; }
+.skip-link { position: fixed; top: -6rem; left: 1rem; z-index: 100; padding: 1rem 1.5rem; background: white; color: #04183b; }
+.skip-link:focus { top: 1rem; }
+.editorial-label { display: flex; align-items: center; gap: .85rem; font-size: .75rem; font-weight: 600; line-height: 1.6; letter-spacing: .13em; text-transform: uppercase; color: var(--site-accent); }
+.label-rule { display: inline-block; width: 2rem; height: 2px; background: #bd9549; flex-shrink: 0; }
+.editorial-button { display: inline-flex; justify-content: center; align-items: center; gap: 1.5rem; min-height: 3.3rem; padding: .9rem 1.4rem; background: var(--site-accent); color: white; font-size: .9375rem; font-weight: 500; border: 1px solid transparent; border-radius: 3px; transition: background .2s, transform .2s; }
+.editorial-button:hover { background: #041c45; transform: translateY(-2px); }
+/* Secondary action beside .editorial-button. It reuses the primary's box so the
+   two sit on one baseline and match in height, and drops the fill so the page
+   still has only one primary. The transition and the hover lift come from
+   .editorial-button; only the fill, the rule and the ink change here.
+   On a photo hero it inverts to white, where the ground is already dark. */
+.editorial-button-ghost { background: transparent; color: var(--site-accent);
+  border-color: color-mix(in srgb, var(--site-accent) 38%, transparent); }
+.editorial-button-ghost:hover { background: color-mix(in srgb, var(--site-accent) 7%, transparent);
+  border-color: var(--site-accent); }
+.page-hero-photo .editorial-button-ghost { color: #fff; border-color: #ffffff66; }
+.page-hero-photo .editorial-button-ghost:hover { background: #ffffff1f; border-color: #fff; }
+.editorial-text-link { display: inline-flex; align-items: center; gap: .7rem; font-size: .9375rem; font-weight: 500; color: #102549; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; transition: text-decoration-color .2s; }
+.editorial-text-link:hover { text-decoration-color: currentColor; }
+.photo-hero, .photo-banner { position: relative; overflow: hidden; color: #fff; display: flex; }
+.photo-hero-media, .photo-banner-media { position: absolute; inset: 0; z-index: 0; }
+.photo-hero-media img, .photo-banner-media img { object-fit: cover; }
+.photo-hero-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(96deg, #040a14eb 0%, #040a14c2 26%, #040a1480 50%, #040a1426 72%, transparent 88%),
+    linear-gradient(to top, #040a1499 0%, transparent 38%); }
+/* Measured, not eyeballed: white copy over a bright photograph needs the ground
+   held near 80% black to clear 4.5:1, and the copy column reaches ~44% across at
+   1440px. The old ramp was down to 22% by 64% and left the line ends at 1.5:1. */
+.photo-banner-scrim { position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(100deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,.86) 32%,
+    rgba(0,0,0,.7) 48%, rgba(0,0,0,.3) 70%, transparent 90%); }
+.photo-hero { margin-top: 6.5rem; min-height: min(84vh, 52rem); align-items: flex-end; }
+.photo-banner { min-height: 26rem; align-items: center; }
+/* The overlay copy sits in the page container so the hero's left edge lines up
+   with every section below it; the text column is capped on the inner wrapper. */
+.photo-hero-content, .photo-banner-content { position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,.45); }
+.photo-hero-copy { max-width: 44rem; }
+.photo-banner-copy { max-width: 38rem; }
+.photo-hero-content { padding-block: 3.5rem 4rem; }
+.photo-banner-content { padding-block: 4.5rem; }
+.photo-hero-content .editorial-label, .photo-banner-content .editorial-label { color: #cbd9f0; }
+.photo-hero-content h1 { margin-top: 1.6rem; font-size: clamp(2.1rem, 3.2vw, 3.8rem); line-height: 1.05; letter-spacing: -.04em; font-weight: 600; color: #fff; }
+.photo-hero-content h1 em { color: var(--color-gold-300); font-weight: 600; font-style: normal; }
+.photo-banner-content h2 { margin-top: 1.2rem; font-size: clamp(2.2rem, 3.6vw, 3.4rem); line-height: 1.06; letter-spacing: -.035em; font-weight: 600; color: #fff; }
+.photo-hero-lead { font-size: clamp(1.05rem, 1.4vw, 1.3rem); margin-top: 1.4rem; line-height: 1.55; letter-spacing: -.02em; color: #fff; }
+/* The payoff phrase in the lead line. Gold echoes the h1 emphasis, but the
+   tracking, weight and warm glow keep it a distinct second beat rather than
+   a repeat of it. Solid colour, not a clipped gradient, so the text-shadow
+   that carries legibility over the photograph survives. */
+.photo-hero-lead strong { color: var(--color-gold-300); font-weight: 600; letter-spacing: .045em;
+  text-shadow: 0 0 30px #e0b45052, 0 0 9px #e0b4503d, 0 1px 3px #000000a6; }
+.photo-banner-lead { font-size: clamp(1.05rem, 1.4vw, 1.3rem); margin-top: 1.4rem; line-height: 1.55; letter-spacing: -.02em; color: #fff; max-width: 30rem; }
+.photo-hero-description { margin-top: .9rem; font-size: .9375rem; line-height: 1.75; color: #e8ebf0; max-width: 34rem; }
+@media (min-width: 1101px) {
+  .photo-hero-copy { max-width: 56%; }
+  .photo-hero-content h1, .photo-hero-lead { white-space: nowrap; }
+}
+/* Standing disclosure for an AI-generated banner photograph. Same badge as
+   .layer-band-figure-tag on /platform, moved to the bottom-right: a banner
+   crops its photograph hard, so a watermark burned into the file is cut away
+   at most widths and the disclosure has to be drawn by the page instead. */
+/* Below this the copy spans the full width of the banner, and no left-weighted
+   ramp can hold it: at 768px the line ends were landing at 1.5:1 over the bright
+   side of the photograph. So the two stop overlapping — the photograph keeps its
+   own band, unscrimmed and fully visible, and the copy moves onto solid ground
+   underneath it, where contrast is a fixed property rather than a function of
+   what happens to be behind a given word. */
+@media (max-width: 1023px) {
+  .photo-banner { display: block; min-height: 0; }
+  .photo-banner-media { position: relative; height: clamp(13rem, 42vw, 19rem); }
+  .photo-banner-scrim { display: none; }
+  .photo-banner-content { background: #0b1220; text-shadow: none; }
+  .photo-banner-copy { max-width: none; }
+  .photo-banner-lead { color: #c3ccda; }
+}
+
+.photo-banner-tag { position: absolute; z-index: 3; right: 1.25rem; bottom: 1.1rem;
+  padding: .4rem .65rem; border-radius: 2px; border: 1px solid #ffffff2e;
+  background: #0b1020d1; backdrop-filter: blur(4px); color: #fff;
+  font-family: var(--font-mono); font-size: .5625rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; }
+.photo-hero-actions, .photo-banner-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin-top: 2.25rem; }
+.photo-hero-actions .editorial-text-link, .photo-banner-actions .editorial-text-link { color: #fff; }
+.hero-spec { display: flex; align-items: center; gap: .9rem; margin-top: 1.5rem; }
+.hero-spec-value { font-family: var(--font-mono); font-size: 3rem; line-height: 1; letter-spacing: -.04em; color: #fff; }
+.hero-spec > span:last-child { font-size: .8125rem; line-height: 1.45; color: #e2e6ec; }
+.hero-spec strong { display: block; font-weight: 500; font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold-300); }
+.photo-hero-trust { display: flex; flex-direction: column; gap: .4rem; margin-top: 2.25rem; color: #fff; font-size: .75rem; }
+/* The ledge under the hero. Dark and full-bleed, so it reads as the base of
+   the hero rather than the first line of the page below it — and so the
+   ten-colour wavelength hairline that ends the hero photo lands exactly on
+   the seam, as a spectral rule instead of a stray line. */
+.hero-bottom { background: #040a14; color: #a7b2c6; }
+.hero-bottom-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding-block: 1.7rem; font-size: .9375rem; }
+.hero-bottom p { letter-spacing: -.01em; }
+.hero-bottom strong { font-weight: 600; color: var(--color-gold-300); }
+.hero-bottom a { display: inline-flex; align-items: center; gap: .9rem; color: #fff; font-weight: 500; white-space: nowrap; }
+.hero-bottom a span { display: grid; place-items: center; width: 2.15rem; height: 2.15rem; border: 1px solid #ffffff2e; border-radius: 50%; transition: background .2s, border-color .2s, color .2s, transform .2s; }
+.hero-bottom a:hover span { background: var(--color-gold-300); border-color: var(--color-gold-300); color: #040a14; transform: translateY(3px); }
+/* ============================================================
+   Spectral chapter — the dark band that carries the wavelength
+   series, running straight into the platform turntable below.
+   ============================================================ */
+.spectrum-section { background: #040b18; color: #cfd6e1; padding-block: clamp(4rem, 8vw, 7.5rem); }
+.spectrum-grid { display: grid; grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: clamp(2.5rem, 6vw, 6rem); align-items: center; }
+.spectrum-section .editorial-label { color: #8fa2c4; }
+.spectrum-copy h2 { margin-top: 1.6rem; font-size: clamp(2.05rem, 3.2vw, 3rem); line-height: 1.1; letter-spacing: -.03em; color: #fff; text-wrap: balance; }
+.spectrum-copy h2 em { font-style: normal; color: var(--color-gold-300); }
+.spectrum-copy > p { margin-top: 1.6rem; font-size: 1.0625rem; line-height: 1.8; color: #9da6b6; }
+.spectrum-copy .editorial-text-link { margin-top: 2.1rem; color: #fff; }
+
+/* ---- Wavelength scrubber over the aligned OD series ---- */
+.spectral-explorer { position: relative; margin: 0; }
+.explorer-frame { position: relative; aspect-ratio: 1.37; background: #000; overflow: hidden; border-radius: 4px; }
+.explorer-frame-img { object-fit: cover; transition: opacity .85s cubic-bezier(.4,0,.2,1); }
+.explorer-frame::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 22%, transparent 55%, rgba(0,0,0,.82) 100%); }
+.explorer-meta { position: absolute; z-index: 2; top: 1rem; left: 1.25rem; right: 1.25rem; display: flex; justify-content: space-between; gap: 1rem;
+  font-size: .625rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: #ffffff8c; }
+.explorer-readout { position: absolute; z-index: 2; left: 1.25rem; right: 1.25rem; bottom: 1.1rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.25rem; }
+.explorer-nm { font-family: var(--font-mono); font-size: clamp(2.4rem, 4.4vw, 3.4rem); line-height: .9; letter-spacing: -.055em; font-variant-numeric: tabular-nums; color: var(--band, #fff); transition: color .6s ease; }
+.explorer-nm small { font-size: .3em; margin-left: .25em; letter-spacing: 0; opacity: .6; }
+.explorer-reveals { text-align: right; font-size: .8125rem; line-height: 1.5; color: #ffffffbf; max-width: 15rem; }
+.explorer-reveals strong { display: block; font-size: .5625rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: #ffffff73; margin-bottom: .3rem; }
+
+.explorer-bar { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.6rem;
+  font-size: .625rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: #ffffff5c; }
+.explorer-rail { position: relative; height: 1.25rem; display: flex; align-items: center; margin-top: .5rem; }
+.explorer-rail-track, .explorer-rail-fill { height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, #e8c65f, #e9a94f 12%, #e0705a 25%, #cf5a63 36%, #a86ea8 50%, #8d78bd 60%, #7585c6 70%, #5f92c9 80%, #4f9cc4 90%, #48a6b8); }
+.explorer-rail-track { position: absolute; inset-inline: 0; opacity: .28; }
+.explorer-rail-fill { position: absolute; left: 0; transition: width .3s cubic-bezier(.4,0,.2,1); }
+.explorer-rail input { position: relative; z-index: 1; width: 100%; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: grab; }
+.explorer-rail input:active { cursor: grabbing; }
+.explorer-rail input::-webkit-slider-runnable-track { height: 1.25rem; background: transparent; }
+.explorer-rail input::-moz-range-track { height: 1.25rem; background: transparent; }
+.explorer-rail input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 1rem; height: 1rem; margin-top: .125rem; border-radius: 50%;
+  background: var(--band, #fff); border: 2px solid #040b18; box-shadow: 0 0 0 1px var(--band, #fff), 0 2px 10px #0009; transition: background .5s ease, box-shadow .5s ease; }
+.explorer-rail input::-moz-range-thumb { width: 1rem; height: 1rem; border-radius: 50%;
+  background: var(--band, #fff); border: 2px solid #040b18; box-shadow: 0 0 0 1px var(--band, #fff), 0 2px 10px #0009; }
+.explorer-rail input:focus-visible { outline: none; }
+.explorer-rail input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 1px var(--band, #fff), 0 0 0 5px #ffffff2e; }
+
+/* Filmstrip: ten views of one eye, doubling as the selector */
+.explorer-strip { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: .4rem; margin-top: 1.1rem; }
+.explorer-strip button { display: block; width: 100%; cursor: pointer; }
+.explorer-thumb { position: relative; display: block; aspect-ratio: 1.25; overflow: hidden; border-radius: 2px; background: #000; }
+.explorer-thumb img { object-fit: cover; opacity: .62; filter: grayscale(1) brightness(1.3) contrast(1.02); transition: opacity .35s ease, filter .35s ease, transform .6s var(--ease-out-expo); }
+.explorer-thumb::after { content: ""; position: absolute; inset: 0; border-radius: 2px; box-shadow: inset 0 0 0 1px #ffffff14; transition: box-shadow .35s ease; }
+.explorer-strip button:hover .explorer-thumb img { opacity: .9; transform: scale(1.06); }
+.explorer-strip button.is-active .explorer-thumb img { opacity: 1; filter: none; }
+.explorer-strip button.is-active .explorer-thumb::after { box-shadow: inset 0 0 0 2px var(--band), 0 6px 20px #000000a6; }
+.explorer-strip small { display: block; margin-top: .5rem; font-family: var(--font-mono); font-size: .625rem; font-variant-numeric: tabular-nums; text-align: center; color: #5e6674; transition: color .2s; }
+.explorer-strip button:hover small { color: #cfd6e1; }
+.explorer-strip button.is-active small { color: #fff; }
+
+/* ============================================================
+   Glass cards — "Where it applies". Frosted panels over a navy
+   wash with one soft colour bloom per disease area: the single
+   place on the site where colour does the sorting.
+   ============================================================ */
+.glass-section { position: relative; isolation: isolate; overflow: hidden;
+  background: linear-gradient(168deg, #f5f7fc 0%, #e9edf7 55%, #e3e8f4 100%); }
+.glass-section::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, #ffffff00 70%, #ffffff66 100%); }
+.glass-bloom { position: absolute; z-index: -2; width: 34rem; height: 34rem; border-radius: 50%;
+  filter: blur(120px); opacity: .28; pointer-events: none; }
+.glass-bloom-a { top: -12rem; left: -8rem; background: #a87b12; opacity: .18; }
+.glass-bloom-b { top: 22%; right: -12rem; background: #166f94; }
+.glass-bloom-c { bottom: -16rem; left: 32%; background: #634699; opacity: .22; }
+
+.glass-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.glass-card { position: relative; display: flex; flex-direction: column; padding: 2.1rem;
+  border-radius: 14px; border: 1px solid #ffffffb3; background: #ffffff59;
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  box-shadow: 0 1px 2px #04122a0f, 0 18px 40px -22px #04122a4d;
+  transition: transform .4s var(--ease-out-expo), box-shadow .4s ease, background .3s ease, border-color .3s ease; }
+.glass-card::before { content: ""; position: absolute; inset: 0; border-radius: 14px; pointer-events: none;
+  background: radial-gradient(120% 90% at 8% 0%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 58%);
+  opacity: 0; transition: opacity .4s ease; }
+.glass-card:hover { transform: translateY(-4px); background: #ffffff8c; border-color: #fff;
+  box-shadow: 0 1px 2px #04122a14, 0 28px 55px -22px #04122a5c; }
+.glass-card:hover::before { opacity: 1; }
+
+.glass-icon { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 12px;
+  color: color-mix(in srgb, var(--accent) 86%, #04122a); background: color-mix(in srgb, var(--accent) 13%, #ffffff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent);
+  transition: background .3s ease, color .3s ease, box-shadow .3s ease; }
+.glass-card:hover .glass-icon { color: #fff; background: var(--accent);
+  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--accent) 60%, transparent); }
+
+.glass-eyebrow { margin-top: 1.75rem; font-size: .6875rem; font-weight: 600; letter-spacing: .13em;
+  text-transform: uppercase; color: color-mix(in srgb, var(--accent) 72%, #04122a); }
+/* Flex row, not inline: these titles wrap to two lines, and an inline arrow
+   would break onto a line of its own underneath. As a flex item it stays
+   beside the text and centres against however many lines it wraps to. */
+.glass-card h3 { display: flex; align-items: center; gap: .6rem; margin-top: .6rem;
+  font-size: 1.7rem; line-height: 1.2; font-weight: 600; letter-spacing: -.035em; color: #0b1a33; }
+.glass-card h3 svg { flex-shrink: 0;
+  color: color-mix(in srgb, var(--accent) 86%, #04122a); transition: transform .3s var(--ease-out-expo); }
+.glass-card:hover h3 svg { transform: translate(3px, -3px); }
+.glass-description { margin-top: .9rem; font-size: .9375rem; line-height: 1.75; color: #3f4a60; flex: 1; }
+
+@media (max-width: 767px) {
+  .glass-grid { grid-template-columns: minmax(0, 1fr); }
+  .glass-card { padding: 1.6rem; }
+  .glass-card h3 { font-size: 1.45rem; }
+  .glass-bloom { width: 22rem; height: 22rem; filter: blur(90px); }
+}
+
+@media (max-width: 1023px) {
+  .spectrum-grid { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+  .spectrum-copy > p { max-width: 38rem; }
+}
+@media (max-width: 639px) {
+  /* Thumbnails stay legible by scrolling rather than shrinking */
+  .explorer-strip { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 4.25rem;
+    overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+    padding-bottom: .25rem; scrollbar-width: none; }
+  .explorer-strip::-webkit-scrollbar { display: none; }
+  .explorer-strip button { scroll-snap-align: center; }
+}
+@media (max-width: 1100px) { .photo-hero-actions, .photo-banner-actions { gap: 1.2rem; } }
+@media (max-width: 767px) {
+  .photo-hero { margin-top: 4.5rem; min-height: 60vh; }
+  .photo-hero-content { padding-block: 2.5rem 2.75rem; }
+  .photo-banner-content { padding-block: 3.25rem; }
+  .photo-hero-content h1 { font-size: clamp(2.75rem, 11vw, 4rem); margin-top: 1.2rem; }
+  .photo-banner-content h2 { font-size: clamp(2rem, 9vw, 2.6rem); }
+  .photo-hero-lead, .photo-banner-lead { margin-top: 1.1rem; font-size: 1.2rem; }
+  .photo-hero-trust { margin-top: 1.5rem; }
+  .hero-bottom-inner { align-items: flex-start; font-size: .8125rem; padding-block: 1.35rem; }
+  .hero-bottom p { max-width: 14rem; }
+  .hero-bottom a { gap: .6rem; }
+  .hero-bottom a span { width: 1.9rem; height: 1.9rem; }
+  .explorer-meta { top: .75rem; left: 1rem; right: 1rem; font-size: .5625rem; letter-spacing: .12em; }
+  .explorer-readout { left: 1rem; right: 1rem; flex-direction: column; align-items: flex-start; gap: .4rem; }
+  .explorer-reveals { text-align: left; }
+  .explorer-bar { font-size: .5625rem; letter-spacing: .12em; margin-top: 1.2rem; }
+  .explorer-bar-hover { display: none; }
+}
+
+/* ---- Specifications (/products/msi-120) ----
+   Two columns of key/value on a dark ground, hairline-ruled. Placeholder values
+   are frequent here, so the value column is mono — an empty [TO CONFIRM] reads
+   as a field awaiting a figure rather than as a typographic gap. */
+.spec-section { background: #121c30; color: #b3bdcd; padding-block: 5.5rem; }
+.spec-section .editorial-label { color: #8fa2c4; }
+.spec-section h2 { margin-top: 1.4rem; margin-bottom: 3rem; font-size: clamp(2rem, 3.2vw, 2.9rem);
+  line-height: 1.12; letter-spacing: -.035em; font-weight: 600; color: #fff; }
+.spec-list { border-top: 1px solid #ffffff1f; }
+.spec-list > div { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: .35rem 2.5rem;
+  padding-block: 1.15rem; border-bottom: 1px solid #ffffff14; }
+.spec-list dt { font-size: .9375rem; font-weight: 500; color: #fff; }
+.spec-list dd { margin: 0; font-family: var(--font-mono); font-size: .875rem; line-height: 1.6; color: #93a0b4; }
+@media (max-width: 767px) {
+  .spec-section { padding-block: 3.5rem; }
+  .spec-list > div { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Wavelength/depth diagram (/products/msi-120) ----
+
+   One grid does the whole thing: four beam columns plus a label column, and one
+   row per stratum. A beam is simply a grid item spanning `2 / span n`, so the
+   deeper the band the further it reaches — the geometry is the argument, with no
+   hard-coded heights to drift out of step with the data. */
+.depth { margin: 0; }
+/* A dark plate inside a light section: the beams are light, and light needs a
+   dark ground to actually glow. Deepening the gradient downward does the
+   "denser with depth" work without asserting anything per stratum. */
+.depth-grid { display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 2.1fr);
+  grid-template-rows: auto repeat(4, minmax(4.75rem, 1fr));
+  column-gap: .5rem; padding: 2.25rem 2.5rem 2.75rem; border-radius: 6px;
+  background:
+    radial-gradient(120% 90% at 30% -10%, #1b2740 0%, transparent 60%),
+    linear-gradient(to bottom, #101a2c 0%, #070c16 100%);
+  border: 1px solid #ffffff14; }
+
+.depth-head { display: flex; flex-direction: column; gap: .25rem; padding-bottom: 1.5rem; text-align: center; }
+.depth-head span { font-family: var(--font-mono); font-size: .8125rem; color: #e4e9f2; }
+.depth-head small { font-size: .625rem; letter-spacing: .12em; text-transform: uppercase; color: #8590a3; }
+
+.depth-stratum { grid-column: 1 / -1; border-top: 1px solid #ffffff12; background: #ffffff05; }
+
+.depth-beam { position: relative; }
+/* Scatter cone: light spreads and dims as it goes through tissue, so the beam
+   widens and fades with depth instead of running as a parallel bar. */
+.depth-beam::before { content: ""; position: absolute; inset: 0;
+  clip-path: polygon(45% 0%, 55% 0%, 80% 100%, 20% 100%);
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--band) 60%, transparent),
+    color-mix(in srgb, var(--band) 6%, transparent));
+  filter: blur(7px); }
+.depth-beam > span { position: relative; display: block; width: 2px; height: 100%; margin-inline: auto;
+  overflow: hidden; border-radius: 2px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--band) 22%, transparent), var(--band)); }
+/* A bright segment running the length of each beam, staggered band to band, so
+   the diagram reads as light entering rather than as four static bars. */
+.depth-beam > span::after { content: ""; position: absolute; inset-inline: 0; height: 26%; border-radius: 2px;
+  background: linear-gradient(to bottom, transparent, #fff, transparent);
+  animation: beam-pulse 3.8s ease-in-out infinite; animation-delay: calc(var(--i) * .55s); }
+@keyframes beam-pulse {
+  0%        { transform: translateY(-130%); opacity: 0; }
+  12%       { opacity: .95; }
+  62%, 100% { transform: translateY(420%); opacity: 0; }
+}
+/* The tip: where this band stops. */
+.depth-beam::after { content: ""; position: absolute; bottom: -6px; left: 50%; translate: -50% 0;
+  width: 12px; height: 12px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--band) 26%, transparent),
+              0 0 26px 7px color-mix(in srgb, var(--band) 70%, transparent),
+              0 0 60px 18px color-mix(in srgb, var(--band) 30%, transparent); }
+
+.depth-reveal { grid-column: 5; display: flex; flex-direction: column; justify-content: center; gap: .35rem;
+  padding: .6rem 0 .6rem 2rem; font-size: .875rem; line-height: 1.55; color: #d5dbe6; }
+.depth-reveal em { font-family: var(--font-mono); font-style: normal; font-size: .6875rem; color: #8590a3; }
+
+
+@media (max-width: 767px) {
+  .depth-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto repeat(4, 3.5rem); padding: 1.5rem 1.25rem 1.75rem; }
+  .depth-head span { font-size: .6875rem; }
+  .depth-head small { display: none; }
+  /* Stacked beneath rather than beside: a fifth column of prose at phone width
+     would leave the beams a few pixels wide. */
+  .depth-reveal { grid-column: 1 / -1; grid-row: auto; padding: .9rem 0 0; border-top: 1px solid #ffffff12; }
+}
+
+/* Device turntable.
+
+   There is only one render of the MSI-120, so this cannot be a true 360 turn —
+   a flat image past roughly 20 degrees stops reading as an object and starts
+   reading as a sheet of paper. This rocks it either side of centre with
+   perspective, which reads as a slow turntable while staying inside the angle
+   the single render can carry. Swap for a frame sequence if renders at multiple
+   angles ever exist. */
+@keyframes device-turn {
+  0%, 100% { transform: perspective(1500px) rotateY(-11deg) translateY(0); }
+  50%      { transform: perspective(1500px) rotateY(11deg) translateY(-9px); }
+}
+.device-turntable { animation: device-turn 12s ease-in-out infinite; will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .device-turntable { animation: none; transform: none; }
+}
+
+/* ============================================================
+   Inner-page editorial system
+
+   The homepage language applied to interior pages: flat grounds,
+   hairline rules, mono numerals, no rounded cards. /platform is the
+   first page migrated onto it; PageHero / Disclaimer / SectionHeading
+   are still in use on the pages that have not moved yet.
+   ============================================================ */
+
+/* Top padding clears the fixed header, which is ~100px with its utility strip. */
+.page-hero { background: #f6f7f9; border-bottom: 1px solid var(--site-line); padding-block: 10rem 4.5rem; }
+.page-hero h1 { margin-top: 1.6rem; max-width: 20ch; font-size: clamp(2.4rem, 4.4vw, 4rem); line-height: 1.06; letter-spacing: -.04em; font-weight: 600; }
+.page-hero-lead { margin-top: 1.5rem; max-width: 46rem; font-size: 1.0625rem; line-height: 1.85; color: #464d5b; }
+.page-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin-top: 2.5rem; }
+
+/* ---- Photo hero ----
+   The interior hero with a photograph behind it instead of the flat #f6f7f9
+   ground. It keeps .page-hero's proportions rather than borrowing the
+   homepage's .photo-hero, so the page still reads as a sibling of /platform
+   and /products and not as a second front door.
+
+   The scrim is measured against this photograph, not guessed: white copy over
+   its bright half needs the ground held near 80% black to clear 4.5:1, and the
+   lead runs to ~53% of the width at 1440px, so the ramp has to carry that far
+   before it lets the picture through. */
+/* Given a photograph to hold, the hero earns more height than the flat one: a
+   picture needs room to be a picture. min-height rather than more padding, so
+   the band keeps its proportions whatever length the copy happens to be, and
+   the copy centres inside it. The padding stays as the floor — it is what keeps
+   the copy clear of the fixed header on a short viewport, where centring alone
+   would slide it up underneath.
+
+   The height tracks viewport WIDTH, not height. With object-fit: cover, a
+   fixed-height band crops harder the wider the screen gets — on a 2530px
+   monitor a 736px hero showed only the top half of the picture, cutting both
+   faces off entirely. Tying height to width keeps the band's aspect inside a
+   usable range instead of letting it stretch toward a letterbox slot. */
+.page-hero-photo { position: relative; isolation: isolate; overflow: hidden;
+  background: #0b1220; border-bottom-color: transparent;
+  display: flex; align-items: center; min-height: clamp(40rem, 52vw, 60rem);
+  padding-block: 9rem 5rem; }
+.page-hero-photo > .container-x { position: relative; z-index: 2; width: 100%; }
+.page-hero-media { position: absolute; inset: 0; z-index: 0; }
+.page-hero-media img { object-fit: cover; }
+.page-hero-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(100deg, rgba(4,10,20,.93) 0%, rgba(4,10,20,.89) 40%,
+    rgba(4,10,20,.74) 58%, rgba(4,10,20,.34) 76%, transparent 93%); }
+.page-hero-photo h1 { color: #fff; }
+.page-hero-photo .page-hero-lead { color: #c8d1de; }
+.page-hero-photo .editorial-label { color: #cbd9f0; }
+.page-hero-photo .label-rule { background: var(--color-gold-300); }
+.page-hero-photo .editorial-text-link { color: #fff; }
+
+/* Split photo hero: the picture is confined to the right of the band and the
+   copy sits on the section's own solid ground. Nothing overlaps, so there is no
+   scrim at all and text contrast stops being a function of what happens to be
+   behind a given word. The left edge is masked rather than cut, so the image
+   emerges from the dark instead of being pasted onto it.
+
+   The copy column is capped tighter than the usual 46rem: at 2530px the
+   container starts at x=545 and the image at 45%=1138, leaving 593px, so the
+   lead has to fit inside that or it runs under the picture. */
+.page-hero-split .page-hero-media { left: 60%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18%);
+  mask-image: linear-gradient(to right, transparent 0, #000 18%); }
+.page-hero-split .page-hero-scrim { display: none; }
+/* Both, not just the lead: .page-hero h1 is capped in `ch`, which at this type
+   size resolves to ~836px — wider than the column the split leaves it. The cap
+   is set against the narrowest split column (1200px viewport, where the image
+   starts at 720 and the gutter takes 32), not against the widest. */
+.page-hero-split h1, .page-hero-split .page-hero-lead { max-width: 36rem; }
+
+/* Below this the copy needs the full width, so the split collapses: the image
+   goes back to covering the band and the scrim comes back with it. 1199px is
+   where the scrim already switches to its flat variant, so the two changes
+   happen at the same breakpoint rather than fighting between them. */
+@media (max-width: 1199px) {
+  .page-hero-split .page-hero-media { left: 0;
+    -webkit-mask-image: none; mask-image: none; }
+  .page-hero-split .page-hero-scrim { display: block; }
+  .page-hero-split h1 { max-width: 20ch; }
+  .page-hero-split .page-hero-lead { max-width: 46rem; }
+}
+
+/* Drawn by the page, not taken from the file: the source photograph carries its
+   watermark along the bottom edge, and a hero crops that edge away at every
+   width. */
+/* On a composed banner the badge has to sit over the half it describes: put it
+   on the right of /patients and it labels a real MSI capture as AI-generated,
+   which is the opposite of the truth. */
+.page-hero-tag.is-left { right: auto; left: 1.25rem; }
+/* A quieter variant, for a banner where the disclosure should be present but
+   not part of the composition. */
+.page-hero-tag.is-small { padding: .25rem .45rem; font-size: .4375rem; letter-spacing: .12em;
+  background: #0b1020a8; border-color: #ffffff24; right: .85rem; bottom: .75rem; }
+.page-hero-tag { position: absolute; z-index: 3; right: 1.25rem; bottom: 1.1rem;
+  padding: .4rem .65rem; border-radius: 2px; border: 1px solid #ffffff2e;
+  background: #0b1020d1; backdrop-filter: blur(4px); color: #fff;
+  font-family: var(--font-mono); font-size: .5625rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; }
+
+/* The lead is 46rem wide, so below roughly 1200px it is most of the viewport
+   and no left-weighted ramp can hold it — measured, the line ends fall to
+   2.1:1 at 1024px. Below this the scrim goes flat and the photograph becomes a
+   dark ground rather than a picture with text beside it. 1199px is the site's
+   existing breakpoint, the one the nav already collapses on. */
+@media (max-width: 1199px) {
+  .page-hero-scrim { background: linear-gradient(180deg, rgba(4,10,20,.88) 0%,
+    rgba(4,10,20,.83) 55%, rgba(4,10,20,.9) 100%); }
+}
+/* 78vh of a phone is very nearly the whole screen, so the cap comes down —
+   but not below where the band already sat, or "bigger" would have made the
+   hero shorter on exactly the devices most people read it on. */
+@media (max-width: 767px) {
+  .page-hero-photo { min-height: min(78vh, 40rem); padding-block: 8rem 4rem; }
+}
+
+.notice-strip { background: #fff; border-bottom: 1px solid var(--site-line); }
+.notice-strip > div { display: flex; align-items: flex-start; gap: 1.1rem; padding-block: 1.6rem; }
+.notice-strip svg { flex-shrink: 0; margin-top: .2rem; color: var(--color-gold-600); }
+.notice-strip strong { display: block; font-size: .6875rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold-700); }
+.notice-strip p { max-width: 62rem; margin-top: .45rem; font-size: .8125rem; line-height: 1.8; color: #4b5361; }
+.notice-strip a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Generic bands ----
+   The two grounds the editorial pages alternate between, as standalone
+   sections rather than baked into .layer-band / .finding-band / .product-band.
+   A page that just needs a white or off-white stripe with a hairline above it
+   uses these instead of growing another named band. */
+/* Prose inside an editorial band, held to one readable measure. For the places
+   where a page has something to say rather than something to list — the bands
+   themselves carry lists, grids and ordinals, and a page made only of those
+   reads as a spec sheet. */
+.band-lead { max-width: 46rem; margin-top: 1.4rem; font-size: 1.0625rem; line-height: 1.85; color: #3a4251; }
+.band-body { max-width: 42rem; margin-top: 1rem; font-size: .9375rem; line-height: 1.85; color: #4b5361; }
+
+/* Three across needs more room than two: below this the columns are narrower
+   than their own 2rem padding leaves usable. Scoped away from .instrument-grid-2,
+   which is fine at two columns down to its own 767px breakpoint. */
+@media (max-width: 899px) {
+  .instrument-grid:not(.instrument-grid-2) { grid-template-columns: 1fr; }
+  .instrument-grid:not(.instrument-grid-2) .instrument-card + .instrument-card {
+    border-left: 0; border-top: 1px solid var(--site-line); }
+}
+
+/* Pull quote. Dark ground, so it punctuates a run of light bands rather than
+   being another one; the mark is drawn rather than typed so it cannot be
+   selected or read aloud as part of the sentence. */
+.quote-band { background: #0b1220; color: #d8dde6; padding-block: 5.5rem; }
+.quote-band blockquote { max-width: 56rem; margin: 0; position: relative; }
+/* Above the text, not hanging beside it: a hanging indent puts the mark outside
+   .container-x's gutter, where it is clipped by the viewport edge. A real
+   element rather than a ::before, because a pseudo-element cannot be animated
+   by framer-motion. */
+.quote-mark { display: block; margin-bottom: .1rem; font-size: 4.5rem; line-height: .75;
+  color: var(--color-gold-300); opacity: .5; pointer-events: none; }
+.quote-band p { font-size: clamp(1.35rem, 2.3vw, 2rem); line-height: 1.42; letter-spacing: -.025em;
+  font-weight: 500; color: #fff; text-wrap: pretty; }
+.quote-band footer { display: flex; align-items: baseline; flex-wrap: wrap; gap: .25rem 1rem; margin-top: 2rem; }
+.quote-band cite { font-style: normal; font-weight: 600; font-size: .9375rem; color: #fff; }
+.quote-band footer span { font-size: .6875rem; font-weight: 500; letter-spacing: .14em;
+  text-transform: uppercase; color: #a3b1c8; }
+@media (max-width: 767px) {
+  .quote-band { padding-block: 3.25rem; }
+  .quote-mark { font-size: 3.25rem; }
+}
+
+/* Copy beside a photograph: the location block on /about. */
+.about-where { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 3.5rem; align-items: center; }
+.about-figure { margin: 0; }
+.about-figure > div { position: relative; aspect-ratio: 3 / 2; overflow: hidden;
+  border: 1px solid var(--site-line); border-radius: 6px; background: #0b1220; }
+.about-figure img { object-fit: cover; }
+.about-figure figcaption { margin-top: .7rem; font-size: .75rem; line-height: 1.7; color: #59606b; }
+@media (max-width: 1023px) { .about-where { grid-template-columns: 1fr; gap: 2rem; } }
+
+/* Emphasis inside band and hero prose. 600 rather than the browser's `bolder`,
+   which resolves against the inherited weight and lands differently in the two
+   places these appear. Colour is inherited so it works on both the light bands
+   and the photo hero, where the lead is deliberately not white. */
+.page-hero-lead strong, .band-lead strong, .band-body strong { font-weight: 600; }
+/* On the photo hero the lead sits at #c8d1de, so emphasis lifts to white. */
+.page-hero-photo .page-hero-lead strong { color: #fff; }
+
+/* /contact's banner is bright through its middle third — the glow around the
+   handshake — and the lead ran its full 46rem straight into it: measured
+   4.19:1 at 1200px against the 4.5 it needs, while every other width passed.
+   Capping the copy fixes it where deepening the scrim that far would have
+   stopped the photograph reading as a photograph. Below 1023px the scrim is
+   the flat vertical one and the cap is unnecessary. */
+.page-hero-photo.is-copy-tight .page-hero-lead { max-width: 34rem; }
+@media (max-width: 1023px) {
+  .page-hero-photo.is-copy-tight .page-hero-lead { max-width: 46rem; }
+}
+
+/* Prose at the full container width, for a band meant to fill the page rather
+   than sit in a column. Opt-in per band, not the default: .band-lead and
+   .band-body are held to 46rem and 42rem because a long measure is harder to
+   read, and dropping that is a deliberate trade. */
+.band-wide .band-lead, .band-wide .band-body { max-width: none; }
+
+/* Reference list (/evidence). Hairline rows rather than a bordered table: a
+   citation is read one at a time, and boxing each one makes seven of them look
+   like a product grid. */
+.ref-list { border-top: 1px solid var(--site-line); }
+.ref-list li { padding-block: 1.75rem; border-bottom: 1px solid var(--site-line); }
+.ref-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem;
+  font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .1em;
+  text-transform: uppercase; color: #5c6472; }
+.ref-list h3 { margin-top: .8rem; max-width: 54rem; font-size: 1.15rem; line-height: 1.4;
+  font-weight: 600; letter-spacing: -.015em; }
+.ref-cite { margin-top: .5rem; font-size: .875rem; line-height: 1.7; color: #59606b; }
+.ref-note { margin-top: .7rem; max-width: 52rem; font-size: .9375rem; line-height: 1.8; color: #464d5b; }
+.ref-doi { display: inline-flex; align-items: center; gap: .45rem; margin-top: .9rem;
+  font-family: var(--font-mono); font-size: .75rem; color: #102549;
+  text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px;
+  transition: text-decoration-color .2s; }
+.ref-doi:hover { text-decoration-color: currentColor; }
+@media (max-width: 767px) { .ref-list li { padding-block: 1.4rem; } }
+
+/* Regulatory status (/evidence). Four pairs: the area, and the standard or
+   pathway that applies to it. A grid rather than the full-width row list it
+   replaces — once the notes came out, each row was a name at one end of a
+   1376px line and a tag at the other, with nothing between them.
+
+   The value is set larger than its own label because that is what a reviewer
+   scans for, but it stays second in the DOM, so reading order and visual order
+   still agree. */
+.reg-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--site-line); }
+.reg-item { display: flex; flex-direction: column; padding: 2rem; }
+.reg-item + .reg-item { border-left: 1px solid var(--site-line); }
+.reg-area { font-family: var(--font-mono); font-size: .6875rem; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; color: #5c6472; }
+.reg-value { margin-top: 1.15rem; font-size: clamp(1.2rem, 1.6vw, 1.55rem); line-height: 1.24;
+  font-weight: 600; letter-spacing: -.025em; color: #101a2e; text-wrap: balance; }
+/* Restored notes drop in under the value without changing the layout. */
+.reg-note { margin-top: 1rem; font-size: .8125rem; line-height: 1.75; color: #4b5361; }
+
+@media (max-width: 1023px) {
+  .reg-grid { grid-template-columns: repeat(2, 1fr); }
+  .reg-item:nth-child(2n + 1) { border-left: 0; }
+  .reg-item:nth-child(n + 3) { border-top: 1px solid var(--site-line); }
+}
+@media (max-width: 599px) {
+  .reg-grid { grid-template-columns: 1fr; }
+  .reg-item { padding: 1.75rem; }
+  .reg-item + .reg-item { border-left: 0; border-top: 1px solid var(--site-line); }
+}
+
+/* Sub-heading inside a prose band. */
+.band-h3 { margin-top: 2.6rem; font-size: 1.35rem; line-height: 1.3; font-weight: 600; letter-spacing: -.02em; }
+
+/* A fact whose value is a place rather than a number, so it cannot take the
+   numeral size without running off its own card. */
+.step-n.is-text { font-size: clamp(1.15rem, 1.6vw, 1.5rem); letter-spacing: -.02em; }
+
+/* People. auto-fit rather than a fixed column count: leadership is one entry
+   today, and in a four-up grid a single name sits in a quarter of an empty
+   box. This way one name fills the row and more names divide it. */
+.people-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  border: 1px solid var(--site-line); }
+.person { padding: 2rem; }
+.person + .person { border-left: 1px solid var(--site-line); }
+.person h3 { font-size: 1.6rem; line-height: 1.2; font-weight: 600; letter-spacing: -.03em; }
+.person .editorial-label { margin-top: .9rem; }
+.person p:not(.editorial-label) { margin-top: 1.1rem; max-width: 42rem;
+  font-size: .9375rem; line-height: 1.8; color: #464d5b; }
+@media (max-width: 767px) {
+  .person { padding: 1.75rem; }
+  .person + .person { border-left: 0; border-top: 1px solid var(--site-line); }
+}
+
+/* Copy beside a form: the application block on /partners. The form column is
+   the wider of the two because it carries the fields. */
+.apply-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 4rem; align-items: start; }
+@media (max-width: 1023px) { .apply-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+/* ---- /contact ----
+   The mirror of .apply-grid: there the copy is narrow and the form wide, here
+   the form leads and the contact details sit beside it. Same gap and same
+   breakpoint so the two form pages stack identically. */
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: 4rem; align-items: start; }
+@media (max-width: 1023px) { .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+/* Four term/value pairs as hairline rows rather than a rounded panel. A <dl>
+   because that is what they are; the icon rides in the <dt> so the rows stay
+   valid without a wrapper the spec does not allow inside one. */
+.contact-list { margin-top: 1.6rem; border-top: 1px solid var(--site-line); }
+.contact-list > div { padding-block: 1.35rem; border-bottom: 1px solid var(--site-line); }
+.contact-list dt { display: flex; align-items: center; gap: .6rem;
+  font-family: var(--font-mono); font-size: .625rem; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; color: #5c6472; }
+.contact-list dt svg { flex-shrink: 0; width: 1rem; height: 1rem; color: var(--color-gold-600); }
+/* dd carries a 40px inline-start margin by default. */
+.contact-list dd { margin: .5rem 0 0; font-size: .9375rem; line-height: 1.65; color: #1b2433; }
+.contact-list a { color: var(--site-accent); text-decoration: underline;
+  text-underline-offset: 4px; text-decoration-color: transparent;
+  transition: text-decoration-color .2s; }
+.contact-list a:hover { text-decoration-color: currentColor; }
+
+/* Band heading outside a .section-title-row, for a band that is one block of
+   label, heading and prose rather than a heading with a grid under it. */
+.band-h2 { margin-top: 1.5rem; font-size: clamp(2rem, 3.1vw, 2.9rem); line-height: 1.12;
+  letter-spacing: -.035em; font-weight: 600; }
+
+/* The instrument card as a plain panel rather than a link, for grids whose
+   cards state something instead of going somewhere. */
+.instrument-card.is-static { cursor: default; }
+.instrument-card.is-static:hover { background: transparent; }
+/* .instrument-icon sizes its LAST svg down to 1.1rem, because on a link card
+   that one is the trailing arrow. A static card has no arrow, so without this
+   its only icon is the one that gets shrunk. */
+.instrument-card.is-static .instrument-icon svg { width: auto; height: auto; }
+
+.editorial-band { background: #fff; border-top: 1px solid var(--site-line); }
+.editorial-band-alt { background: #f6f7f9; border-top: 1px solid var(--site-line); }
+/* The hero already closes with a hairline, so the first band after it must not
+   draw a second one 1px below. */
+.page-hero + .editorial-band, .page-hero + .editorial-band-alt { border-top: 0; }
+
+/* ---- Clinic workflow: four steps in one hairline row (/providers) ----
+   The same flat-ground, hairline-rule, mono-ordinal language as the bands
+   above, but four across and without an icon: these are sequential steps in a
+   single sitting, so the numeral is what carries the meaning and the rule
+   between two cards reads as the handoff from one step to the next. */
+.step-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--site-line); }
+.step-card { display: flex; flex-direction: column; padding: 2rem; transition: background .2s; }
+.step-card + .step-card { border-left: 1px solid var(--site-line); }
+.step-card:hover { background: #f3f4f7; }
+.step-n { font-family: var(--font-mono); font-size: clamp(1.9rem, 3.2vw, 2.6rem); line-height: 1;
+  letter-spacing: -.05em; color: #1e355d; }
+.step-card h3 { margin-top: 1.5rem; font-size: 1.35rem; line-height: 1.2; font-weight: 600; letter-spacing: -.03em; }
+/* :not() rather than a bare `.step-card p`: the ordinal is a <p> too, and a
+   plain element selector here (0,1,1) outranks .step-n (0,1,0) and silently
+   steals its size and colour. Excluding it by class keeps the body text
+   styled from the markup as written, with no class needed on it. */
+.step-card p:not(.step-n) { margin-top: .9rem; font-size: .9375rem; line-height: 1.8; color: #464d5b; }
+/* Each step wears the colour of the platform layer it is: capture, analysis and
+   review are layers 01-03 outright, and the report is what enters the record,
+   so it takes layer 04. Keyed by layer key in the page, not copied, so the two
+   pages cannot drift. inset rather than border-top: the grid already draws a
+   1px frame, and a real border here would shift the row against it. */
+.step-card { box-shadow: inset 0 4px 0 0 var(--layer, transparent); }
+/* The raw accents are tuned to glow on the dark pyramid. The 4px bar is a
+   graphic and takes the accent straight; the numeral is type and is carried to
+   a legible weight by the same 42% mix the bands use. */
+.step-n { color: color-mix(in srgb, var(--layer, #4a70b8) 42%, #0b1020); }
+
+/* Four discrete layers above, the continuous spectrum below. The steps are the
+   platform; this is the light the platform reads. */
+.step-rule { height: 3px; margin-top: 1px; background: var(--spectral); }
+
+/* The finding cards on /providers reuse .instrument-card, and take their accent
+   from the same colour /solutions gives that finding — so a reader arriving at
+   /solutions#drusen from here meets the same colour twice. The raw accents are
+   tuned for the dark pyramid, so anything that has to read as text or icon on
+   white is carried through the same 42% mix the bands use; the 2px label rule
+   is a graphic, not type, and takes the accent straight. */
+.instrument-card.is-accented .label-rule { background: var(--layer); }
+.instrument-card.is-accented .instrument-icon { color: color-mix(in srgb, var(--layer) 42%, #0b1020); }
+
+/* ---- Question list (/providers) ----
+   Hairline rows rather than cards: a clinician scanning four blunt questions
+   wants a list they can run down, and boxing each one slows that to a browse. */
+.qa-list { max-width: 54rem; border-top: 1px solid var(--site-line); }
+.qa-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.1rem;
+  padding-block: 1.75rem; border-bottom: 1px solid var(--site-line); }
+.qa-n { font-family: var(--font-mono); font-size: .6875rem; color: #5c6472; padding-top: .45rem; }
+.qa-row h3 { font-size: 1.15rem; line-height: 1.4; font-weight: 600; letter-spacing: -.02em; }
+/* Excluded for the same reason — .qa-n is a <p> inside .qa-row. */
+.qa-row p:not(.qa-n) { margin-top: .7rem; font-size: .9375rem; line-height: 1.85; color: #3a4251; }
+
+@media (max-width: 1023px) {
+  .step-grid { grid-template-columns: repeat(2, 1fr); }
+  .step-card:nth-child(2n + 1) { border-left: 0; }
+  .step-card:nth-child(n + 3) { border-top: 1px solid var(--site-line); }
+}
+@media (max-width: 767px) {
+  .step-grid { grid-template-columns: 1fr; }
+  .step-card { padding: 1.75rem; }
+  .step-card + .step-card { border-left: 0; border-top: 1px solid var(--site-line); }
+  .qa-row { padding-block: 1.4rem; }
+}
+
+/* ---- Clinical findings: one band per finding ----
+   Same skeleton as .product-band, but the copy column runs longer (two labelled
+   passages and a numbered list rather than a summary), so the grid is balanced
+   rather than weighted to the text. */
+.finding-band { background: #fff; border-top: 1px solid var(--site-line); padding-block: 5.5rem; }
+.finding-band.is-alt { background: #f6f7f9; }
+.finding-band .label-rule { background: var(--layer); }
+.finding-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 3.5rem; align-items: start; }
+/* The accent is pale by design — it is tuned for the dark pyramid — so it is
+   carried to a legible weight here by the same 42% mix /platform uses. */
+.finding-n { font-family: var(--font-mono); font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1;
+  letter-spacing: -.05em; margin-bottom: 1.3rem;
+  color: color-mix(in srgb, var(--layer) 42%, #0b1020); }
+.finding-band h2 { margin-top: 1.1rem; font-size: clamp(2rem, 3.2vw, 2.9rem); line-height: 1.12;
+  letter-spacing: -.035em; font-weight: 600; }
+.finding-heading { margin-top: 2rem; font-size: .625rem; font-weight: 600; letter-spacing: .16em;
+  text-transform: uppercase; color: color-mix(in srgb, var(--layer) 42%, #0b1020); }
+.finding-body { max-width: 38rem; margin-top: .7rem; font-size: .9375rem; line-height: 1.85; color: #3a4251; }
+
+.finding-points { margin-top: 2.25rem; border-top: 1px solid var(--site-line); }
+.finding-points li { display: flex; gap: 1.1rem; align-items: baseline; padding-block: .85rem;
+  border-bottom: 1px solid var(--site-line); font-size: .9375rem; line-height: 1.6; color: #22303f; }
+/* Neutral ordinals: at .6875rem the accent itself does not clear 4.5:1 on white. */
+.finding-points li span:first-child { flex-shrink: 0; font-family: var(--font-mono);
+  font-size: .6875rem; color: #5c6472; }
+
+.finding-figure { margin: 0; position: sticky; top: 7.5rem; }
+/* Every frame stays mounted and stacked; only opacity changes. Unmounting would
+   make each step re-fetch and flash, and these are images a reader is comparing
+   against each other. */
+.finding-frames { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 6px;
+  border: 1px solid var(--site-line); background: #06090f; }
+.finding-frames img { object-fit: cover; opacity: 0; transition: opacity .35s ease; }
+.finding-frames img[data-on="1"] { opacity: 1; }
+
+/* The step control sits under the frame rather than over it: an arrow floating
+   on a clinical image reads as an annotation, and this page has real ones. */
+.finding-nav { display: flex; align-items: center; gap: .3rem; margin-top: .7rem; }
+.finding-nav button { display: inline-flex; align-items: center; justify-content: center;
+  width: 2.1rem; height: 2.1rem; border: 1px solid var(--site-line); border-radius: 3px;
+  color: #3a4251; background: #fff; cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s; }
+.finding-nav button:hover { border-color: color-mix(in srgb, var(--layer) 55%, var(--site-line));
+  color: color-mix(in srgb, var(--layer) 42%, #0b1020); }
+.finding-nav button:focus-visible { outline: 2px solid var(--color-navy-500); outline-offset: 2px; }
+.finding-nav span { margin-left: .5rem; font-family: var(--font-mono); font-size: .6875rem;
+  letter-spacing: .1em; color: #5c6472; font-variant-numeric: tabular-nums; }
+.is-alt .finding-nav button { background: transparent; }
+
+.finding-figure figcaption { margin-top: .7rem; font-size: .75rem; line-height: 1.75; color: #59606b; }
+
+.finding-close { background: #0b1220; color: #d8dde6; padding-block: 5.5rem; }
+.finding-close .editorial-label { color: #dbe3f0; }
+.finding-close .label-rule { background: #dbe3f0aa; }
+.finding-close h2 { margin-top: 1.4rem; font-size: clamp(2rem, 3.4vw, 3rem); line-height: 1.12;
+  letter-spacing: -.035em; font-weight: 600; color: #fff; }
+.finding-close p { max-width: 46rem; margin-top: 1.4rem; font-size: 1.0625rem; line-height: 1.85; color: #aab4c4; }
+.finding-close .editorial-text-link { margin-top: 1.8rem; color: #dbe3f0; }
+
+@media (max-width: 1023px) {
+  .finding-band { padding-block: 3.5rem; }
+  .finding-grid { grid-template-columns: 1fr; gap: 2rem; }
+  /* Sticky only works beside a long column; stacked it would pin the image. */
+  .finding-figure { position: static; }
+}
+
+/* ---- Products index: four bands ----
+   Deliberately close to .layer-band on /platform — same measure, same ordinal,
+   same hairline rules — because the two pages are describing the same object
+   at different altitudes and should not look like different sites. What
+   differs is the media: these are plain figures, not flip cards, since each
+   band here links out rather than holding its own detail. */
+.product-band { background: #fff; border-top: 1px solid var(--site-line); padding-block: 5.5rem; }
+.product-band.is-alt { background: #f6f7f9; }
+.product-band .label-rule { background: var(--layer); }
+.product-band-grid { display: grid; grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+  gap: 3.5rem; align-items: center; }
+/* The ordinal is the layer colour carried to a legible weight, the same 42%
+   mix /platform uses — the raw accents are pale by design and fail on white. */
+.product-band-n { font-family: var(--font-mono); font-size: clamp(2.6rem, 5vw, 4rem);
+  line-height: 1; letter-spacing: -.05em; margin-bottom: 1.3rem;
+  color: color-mix(in srgb, var(--layer) 42%, #0b1020); }
+.product-band h2 { margin-top: 1.1rem; font-size: clamp(2rem, 3.2vw, 2.9rem); line-height: 1.12;
+  letter-spacing: -.035em; font-weight: 600; }
+.product-band-summary { max-width: 34rem; margin-top: 1.3rem; font-size: 1.0625rem;
+  line-height: 1.8; color: #2f3846; }
+
+.product-band-contents-label { margin-top: 2rem; font-size: .625rem; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: #6b7280; }
+/* A wrapping row, not a bulleted column: this is a contents list, and reading
+   it as one line of parts says "these belong together" better than a stack. */
+.product-band-contents { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .85rem; }
+.product-band-contents li { padding: .4rem .75rem; border-radius: 3px; font-size: .8125rem;
+  color: #2f3846; border: 1px solid color-mix(in srgb, var(--layer) 45%, #e3e6ec);
+  background: color-mix(in srgb, var(--layer) 9%, #fff); }
+.product-band .editorial-button { margin-top: 2.25rem; }
+
+.product-figure { position: relative; aspect-ratio: 2.05; margin: 0; overflow: hidden;
+  border-radius: 6px; border: 1px solid var(--site-line); background: #0b1220; }
+.product-figure img { object-fit: cover; }
+/* Renders and illustrations sit ON a plate rather than filling one: cropping a
+   device shot to a 2.05 window would cut the instrument in half. */
+.product-figure.is-plate { background: radial-gradient(125% 125% at 50% 12%, #1e273c 0%, #0d1424 62%, #080d18 100%); }
+.product-figure.is-plate img { object-fit: contain; padding: 1.5rem; }
+.product-figure.is-bottom img { object-position: bottom; }
+
+/* The one division on this page worth marking in the layout. */
+.product-divider { background: #0b1220; border-block: 1px solid #ffffff14; }
+.product-divider p { padding-block: .9rem; text-align: center; font-family: var(--font-mono);
+  font-size: .6875rem; letter-spacing: .2em; text-transform: uppercase; color: #ffffffb3; }
+
+@media (max-width: 1023px) {
+  .product-band { padding-block: 3.5rem; }
+  .product-band-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+/* One band per platform layer. --layer is set inline from the same colour the
+   pyramid plate uses, so a band and its plate read as one object. */
+/* --layer is a pale tint, tuned to glow on the dark pyramid; as text on these
+   light bands it fails contrast outright. --layer-ink is the same hue carried
+   to a legible weight — it is also used as a FILL behind white text on the
+   flip-card hint, so it has to clear 4.5:1 against both white and near-white.
+   At 42% the worst of the four (amber) lands at 5.9:1. */
+.layer-band { --layer-ink: color-mix(in srgb, var(--layer) 42%, #0b1020);
+  background: #fff; border-top: 1px solid var(--site-line); padding-block: 5.5rem; }
+.layer-band.is-alt { background: #f6f7f9; }
+.layer-band .label-rule { background: var(--layer); }
+/* The copy column is sized to its own measure (34rem) rather than taking a
+   blind half, so the contributions column starts where the text actually
+   ends instead of after a track of empty space. */
+.layer-band-grid { display: grid; grid-template-columns: minmax(0, 34rem) minmax(0, 1fr); gap: 3rem; align-items: start; }
+.layer-band-n { font-family: var(--font-mono); font-size: clamp(3rem, 6vw, 5rem); line-height: 1; letter-spacing: -.05em; color: var(--layer-ink); margin-bottom: 1.4rem; }
+.layer-band h2 { margin-top: 1.1rem; font-size: clamp(2rem, 3.2vw, 2.9rem); line-height: 1.12; letter-spacing: -.035em; font-weight: 600; }
+.layer-band-summary { max-width: 34rem; margin-top: 1.4rem; font-size: 1.0625rem; line-height: 1.8; color: #2f3846; }
+.layer-band-detail { max-width: 34rem; margin-top: 1.1rem; font-size: .9375rem; line-height: 1.85; color: #4b5361; }
+/* ---- Layer card: image on the front, contributions on the back ----
+
+   The two faces are the same box rotated about Y. Both stay in the DOM, so the
+   contributions reach assistive tech regardless of flip state — backface
+   visibility is a visual affordance only, never the sole route to content. The
+   @media (hover: none) block below unstacks the card entirely for touch, where
+   hover never fires and a flip would strand the points. */
+.layer-flip-figure { margin: 0; }
+.layer-flip { perspective: 1700px; border-radius: 6px; }
+.layer-flip:focus-visible { outline: 2px solid var(--color-navy-500); outline-offset: 4px; }
+.layer-flip-inner { position: relative; aspect-ratio: 2.05; transform-style: preserve-3d;
+  transition: transform .75s cubic-bezier(.2,.75,.25,1); }
+.layer-flip:hover .layer-flip-inner,
+.layer-flip:focus-visible .layer-flip-inner { transform: rotateY(180deg); }
+
+.layer-flip-face { position: absolute; inset: 0; overflow: hidden; border-radius: 6px;
+  border: 1px solid var(--site-line); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.layer-flip-front { background: #0b1020; }
+.layer-flip-front img { object-fit: cover; object-position: center bottom; }
+/* The device is a portrait render on transparent ground: contain it on a plinth
+   rather than cropping a landscape window out of the middle of it. The plinth is
+   dark because the instrument itself is white — on a light ground it washed out
+   into the card. The soft radial lifts it off a flat black. */
+.layer-flip-front.is-product { background: radial-gradient(125% 125% at 50% 12%, #1e273c 0%, #0d1424 62%, #080d18 100%); }
+.layer-flip-front.is-product img { object-fit: contain; object-position: center; padding: 1.6rem; }
+
+.layer-flip-hint { position: absolute; z-index: 2; left: .85rem; bottom: .85rem;
+  display: flex; align-items: center; gap: .5rem; padding: .45rem .7rem; border-radius: 3px;
+  border: 1px solid #ffffff2e; background: #0b1020cc; backdrop-filter: blur(4px); color: #fff;
+  font-family: var(--font-mono); font-size: .5625rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+  transition: background .25s, border-color .25s; }
+.layer-flip:hover .layer-flip-hint { background: var(--layer-ink); border-color: transparent; }
+
+/* Back face: tinted with the layer's own accent so flipping stays inside the
+   layer's identity rather than landing on a generic panel. */
+.layer-flip-back { transform: rotateY(180deg); display: flex; flex-direction: column;
+  padding: 1.75rem 1.9rem; background: color-mix(in srgb, var(--layer) 9%, #fff);
+  border-color: color-mix(in srgb, var(--layer) 28%, #fff); }
+.layer-flip-back > p { padding-bottom: .9rem; border-bottom: 1px solid color-mix(in srgb, var(--layer) 26%, #fff);
+  font-size: .6875rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #59606b; }
+.layer-flip-back ul { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+.layer-flip-back li { display: flex; gap: 1.1rem; align-items: baseline; padding-block: .85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--layer) 20%, #fff);
+  font-size: .9375rem; line-height: 1.6; color: #22303f; }
+.layer-flip-back li:last-child { border-bottom: 0; }
+.layer-flip-back li span:first-child { flex-shrink: 0; font-family: var(--font-mono); font-size: .6875rem; color: var(--layer-ink); }
+
+.layer-flip-figure figcaption { max-width: 46rem; margin-top: 1rem; font-size: .75rem; line-height: 1.75; color: #59606b; }
+
+.layer-band-figure-tag { position: absolute; z-index: 2; top: .85rem; right: .85rem;
+  padding: .4rem .65rem; border-radius: 2px; border: 1px solid #ffffff2e;
+  background: #0b1020d1; backdrop-filter: blur(4px); color: #fff;
+  font-family: var(--font-mono); font-size: .5625rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; }
+
+/* No hover to flip with: show both faces stacked instead of hiding half the
+   content behind a gesture that never happens. */
+@media (hover: none) {
+  .layer-flip-inner { aspect-ratio: auto; transform: none; transform-style: flat; }
+  .layer-flip-face { position: relative; inset: auto; backface-visibility: visible; transform: none; }
+  .layer-flip-front { aspect-ratio: 2.05; }
+  .layer-flip-back { margin-top: 1rem; }
+  .layer-flip-hint { display: none; }
+}
+@media (max-width: 1023px) {
+  .layer-flip-inner { aspect-ratio: 1.9; }
+}
+
+.status-section { background: #fff; border-top: 1px solid var(--site-line); }
+.status-intro { max-width: 46rem; margin: -1.5rem 0 3rem; font-size: 1rem; line-height: 1.8; color: #464d5b; }
+.status-list { border-top: 1px solid var(--site-line); }
+.status-list li { display: grid; grid-template-columns: 1fr auto; gap: .2rem 2rem; padding-block: 1.9rem; border-bottom: 1px solid var(--site-line); }
+.status-list h3 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; }
+.status-list p { grid-column: 1; max-width: 52rem; margin-top: .7rem; font-size: .9375rem; line-height: 1.75; color: #464d5b; }
+.status-list p.status-note { margin-top: .55rem; font-family: var(--font-mono); font-size: .75rem; line-height: 1.75; color: #7a5f16; }
+.status-tag { grid-row: 1; grid-column: 2; align-self: start; white-space: nowrap; padding: .38rem .7rem; border: 1px solid; border-radius: 2px;
+  font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase;
+  /* Neutral default: /evidence carries statuses the four named ones below do
+     not cover ("Ongoing", "ISO 13485"), and without this they inherit body
+     colour with a currentColor border. */
+  color: #4b5361; border-color: #4b536140; background: #4b53610f; }
+/* The tag used outside .status-list, where its grid placement does not apply
+   (the studies cards on /evidence are flex columns, not grid rows). */
+.status-tag.is-inline { grid-row: auto; grid-column: auto; align-self: flex-start; margin-bottom: .25rem; }
+.status-tag[data-status="Available"] { color: #1c6b4a; border-color: #1c6b4a40; background: #1c6b4a0f; }
+.status-tag[data-status="Investigational"] { color: #8a6508; border-color: #8a650840; background: #8a65080f; }
+.status-tag[data-status="In Development"] { color: #2a4a86; border-color: #2a4a8640; background: #2a4a860f; }
+.status-tag[data-status="Beta"] { color: #5a4ea0; border-color: #5a4ea040; background: #5a4ea00f; }
+
+@media (max-width: 1023px) {
+  .layer-band-grid { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+}
+@media (max-width: 767px) {
+  .page-hero { padding-block: 7.5rem 3rem; }
+  .layer-band { padding-block: 3.5rem; }
+  .status-list li { grid-template-columns: minmax(0, 1fr); }
+  .status-tag { grid-row: auto; grid-column: 1; justify-self: start; margin-top: .8rem; }
+}
+
+/* ============================================================
+   Capture comparison — the same eye, two ways.
+
+   Sits between the platform pyramid and the solutions grid. Near-black
+   rather than the navy above it, so it reads as a viewing room for the
+   two frames rather than a continuation of the platform section, and so
+   the snap into the light solutions band below stays sharp.
+   ============================================================ */
+.capture-compare { background: #03070e; color: #98a3b5; padding-block: 6rem; border-top: 1px solid #ffffff12; }
+.capture-compare .editorial-label { color: #8fa2c4; }
+.capture-head { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: end; margin-bottom: 3.25rem; }
+.capture-head h2 { margin-top: 1.4rem; font-size: clamp(2rem, 3.2vw, 3rem); line-height: 1.12; letter-spacing: -.035em; font-weight: 600; color: #fff; }
+.capture-head > p { font-size: 1rem; line-height: 1.8; color: #98a3b5; max-width: 32rem; }
+
+.capture-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.capture-figure { margin: 0; }
+.capture-figure > div { position: relative; aspect-ratio: 3 / 2; background: #000; border: 1px solid #ffffff17; border-radius: 4px; overflow: hidden; }
+.capture-frame-img { object-fit: cover; }
+.capture-tag { position: absolute; z-index: 2; top: .85rem; left: 1rem; padding: .3rem .6rem; border-radius: 3px;
+  background: #03070eb8; backdrop-filter: blur(3px);
+  font-family: var(--font-mono); font-size: .5625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: #dfe5ee; }
+.capture-figure figcaption { margin-top: 1.15rem; }
+.capture-figure strong { display: block; font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; color: #fff; }
+.capture-figure figcaption span { display: block; margin-top: .5rem; font-size: .8125rem; line-height: 1.65; color: #8d97a8; max-width: 27rem; }
+
+.capture-foot { display: flex; align-items: center; justify-content: space-between; gap: 2.5rem;
+  margin-top: 2.75rem; padding-top: 1.6rem; border-top: 1px solid #ffffff14; }
+.capture-foot p { font-size: .75rem; line-height: 1.7; color: #6f7a8c; max-width: 44rem; }
+.capture-foot .editorial-text-link { color: #fff; flex-shrink: 0; }
+
+@media (max-width: 899px) {
+  .capture-compare { padding-block: 3.5rem; }
+  .capture-head { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; margin-bottom: 2.25rem; align-items: start; }
+  .capture-pair { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .capture-foot { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+}
+
+/* ============================================================
+   Platform turntable — isometric 3D stack of the four layers
+   ============================================================ */
+/* The ground is the retina photograph itself, blurred past recognition of any
+   one feature but not past being an eye. It ships pre-blurred and tiny (512px,
+   11KB): the detail is destroyed either way, so there is no reason to send the
+   full frame and blur it on the client.
+
+   The scrim is sized against the photograph's MEDIAN, not its brightest 5%.
+   Sizing it against the worst case is what buried the picture: protecting the
+   one bright patch behind the iris meant flattening the other 95% to navy.
+   The type is protected where it actually sits instead — the notes and the
+   legend are frosted panels, and each is opaque enough to hold 4.5:1 over the
+   brightest pixel in the frame. The vignette keeps the edges dark so the
+   section still meets the dark ones above and below it. */
+/* Nothing links to #stack today — the homepage CTAs go to the top of
+   /platform — but the id is there and this keeps any future deep link clear of
+   the fixed header: a 1.9rem note bar over a 4.7rem nav, plus a little air. */
+.platform-stack-section { scroll-margin-top: 7.5rem; position: relative; isolation: isolate;
+  background: #050d1c; color: #d8dde6; padding-block: clamp(3.5rem, 5vw, 4.5rem);
+  overflow: hidden; border-top: 1px solid #ffffff12;
+  text-shadow: 0 1px 3px rgba(3, 8, 18, .55); }
+.platform-stack-section::before { content: ""; position: absolute; inset: 0; z-index: -1;
+  background:
+    radial-gradient(125% 95% at 50% 42%, rgba(5, 13, 28, 0) 28%, rgba(5, 13, 28, .58) 100%),
+    linear-gradient(180deg, rgba(5, 13, 28, .44) 0%, rgba(5, 13, 28, .55) 58%, rgba(5, 13, 28, .70) 100%),
+    url("/retinal_eye_rainbow-blur.jpg") center / cover no-repeat; }
+
+/* --step is the height of one pyramid step. Everything in the stage is
+   derived from it, so narrow breakpoints only have to change this one
+   number and the pyramid keeps its proportions. */
+/* ---- Rotating platform pyramid ----
+   Polygon points and face opacity are written per frame from JS; everything
+   here is colour, glow and interaction state only. */
+/* The eyebrow has no panel under it — it sits straight on the photograph — and
+   the inherited --site-accent is a near-black navy meant for white pages. */
+.platform-stack-head .editorial-label { color: #eef2f8; }
+.platform-stack-head .label-rule { background: #eef2f8aa; }
+.platform-stack-head { text-align: center; }
+.platform-stack-head .editorial-label { justify-content: center; }
+.platform-stack-title { margin-top: 1.4rem; font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1.1; letter-spacing: -.04em; font-weight: 700; color: #fff;
+  text-shadow: 0 2px 10px rgba(3, 8, 18, .8); }
+
+/* Board layout, as in the reference infographic: captions down the left, the
+   solid large in the middle, the layer legend top right.
+
+   The legend is positioned OVER the drawing rather than beside it in a grid
+   column, which is what lets the connector be drawn in viewBox units: the svg
+   fills the wrap at its own aspect ratio, so a row's offset in pixels converts
+   to a point in the drawing by one scalar. CX is set so the widest sweep of
+   the base (CX + 283 = 583) clears the left edge of the legend (74% of the
+   820-unit viewBox = 607) at every angle, so the two never collide however the
+   solid is turned. Narrowing the legend or the notes column feeds straight
+   back into how large the type on the solid can be. */
+/* Centred, not top-aligned: the notes are a third of the drawing's height, so
+   anchoring them to the top left an equal run of empty dark underneath. */
+.platform-board { display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: 2.5rem; align-items: center; margin-top: 2.25rem; }
+
+.platform-notes { display: grid; gap: 1rem; }
+.platform-note { padding: 1.2rem 1.3rem; border: 1px solid #ffffff1f; border-radius: 4px;
+  background: rgba(6, 14, 28, .78); backdrop-filter: blur(8px); }
+.platform-note h3 { font-size: 1rem; font-weight: 700; letter-spacing: -.015em; color: #fff; }
+.platform-note p { margin-top: .6rem; font-size: .875rem; line-height: 1.7; color: #a8b4c6; }
+.platform-note ul { margin-top: .75rem; display: grid; gap: .45rem; }
+.platform-note li { position: relative; padding-left: 1.1rem; font-size: .875rem;
+  line-height: 1.55; color: #c2cbd9; }
+.platform-note li::before { content: ""; position: absolute; left: 0; top: .52em;
+  width: 5px; height: 5px; border-radius: 50%; background: #8aabe8; }
+
+.platform-stage { position: relative; }
+.pyramid-wrap { position: relative; width: 100%; }
+.pyramid { display: block; width: 100%; aspect-ratio: 820 / 534; overflow: visible; }
+.pyramid-shadow { fill: #000; opacity: .45; filter: blur(30px); }
+
+.pyramid-tier { cursor: pointer; outline: none; }
+/* Each face is a gradient from the tier's lit colour down to its shaded one
+   (see colorDeep in site.ts), with a lit edge on top. Flat fills made the
+   solid read as four plastic slabs; the gradient is what gives it a body.
+
+   The glow is deliberately restrained — it sits over a photograph now, and a
+   wide neon bloom on every tier was most of what made this look cheap. */
+.pyramid-face { fill: var(--face); stroke: color-mix(in srgb, var(--layer) 78%, #fff);
+  stroke-width: 1.3; stroke-linejoin: round; stroke-opacity: .85; }
+.pyramid-tier { transition: filter .3s ease, opacity .3s ease;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--layer) 32%, transparent)); }
+.pyramid-tier.is-active { filter: drop-shadow(0 0 22px color-mix(in srgb, var(--layer) 62%, transparent)); }
+.pyramid-tier.is-active .pyramid-face { stroke: #ffffff8c; }
+.pyramid-tier.is-dim { opacity: .3; filter: none; }
+.pyramid-tier:focus-visible .pyramid-face { stroke: #fff; stroke-width: 2; }
+
+/* Engraved into the face. The matrix that lays each copy into its plane is
+   written per frame from JS; the opacity that fades a copy out as its face
+   turns away is written there too. The dark halo keeps the type legible over
+   the brightest faces without lifting it off the surface. */
+/* Mono, as the design system already uses for data readouts: this is an
+   instrument label on a technical object, and heavy Inter read as a logo.
+   600 is the heaviest weight JetBrains Mono is loaded at — asking for 800
+   would get a synthesised bold, which on engraved type looks like a mistake.
+
+   The drop-shadow is applied to the text, not its group, so it is cast in the
+   label's own space and therefore shears and foreshortens with the face it is
+   cut into — a shadow pinned to the screen would give the whole thing away. */
+/* The outline is legibility, not decoration: measured, the tier faces give
+   white type only 1.6-1.8:1 on their own, so the glyphs need their own dark
+   ground. What it must NOT be is a glow — a wide soft stroke under a drop
+   shadow reads as embossed 3D lettering, which is the single thing that made
+   this diagram look rendered rather than drawn.
+
+   So: no drop shadow at all, and a stroke that is tighter (2.5px) but more
+   definite (.92) than before. Same job, half the spread, and it reads as
+   crisp outlined type instead of a halo. */
+.pyramid-mark { fill: #fff; font-family: var(--font-mono); font-weight: 600;
+  letter-spacing: .1em;
+  paint-order: stroke; stroke: #06101f; stroke-width: 2.5px; stroke-linejoin: round;
+  stroke-opacity: .92; pointer-events: none; }
+
+.pyramid-motes circle { fill: var(--mote); opacity: 0;
+  animation: pyramid-mote 5.6s cubic-bezier(.45,.05,.35,1) infinite; animation-delay: var(--delay); }
+@keyframes pyramid-mote {
+  0%        { transform: translateY(520px); opacity: 0; }
+  12%       { opacity: .55; }
+  72%       { transform: translateY(140px); opacity: .5; }
+  88%, 100% { transform: translateY(70px); opacity: 0; }
+}
+
+/* Connector from the hovered tier to its row in the legend. */
+.pyramid-leader { opacity: 0; transition: opacity .25s ease; }
+.pyramid-leader.is-on { opacity: 1; }
+.pyramid-leader path { fill: none; stroke: currentColor; stroke-width: 1.5; opacity: .85; }
+.pyramid-leader circle { fill: currentColor; }
+
+.pyramid-aside { position: absolute; top: 0; right: 0; width: 26%; z-index: 2;
+  padding: 1rem; border: 1px solid #ffffff1f; border-radius: 5px;
+  background: rgba(6, 14, 28, .78); backdrop-filter: blur(8px); }
+.pyramid-aside-label { font-size: .625rem; font-weight: 600; letter-spacing: .2em;
+  text-transform: uppercase; color: #a3b0c4; }
+
+/* Source order is 01 -> 04 so the numbering is read in order; the visual order
+   is reversed so the legend descends like the solid beside it. */
+.pyramid-legend { display: flex; flex-direction: column-reverse; gap: .3rem; margin-top: .85rem; }
+.pyramid-legend li { transition: opacity .25s ease; }
+.pyramid-legend li.is-dim { opacity: .4; }
+.pyramid-legend a { display: grid; grid-template-columns: auto 1fr; gap: 0 .6rem;
+  padding: .5rem .7rem; border: 1px solid transparent; border-radius: 4px;
+  transition: background .25s, border-color .25s; }
+.pyramid-legend li.is-active a, .pyramid-legend a:focus-visible {
+  background: color-mix(in srgb, var(--layer) 14%, transparent);
+  border-color: color-mix(in srgb, var(--layer) 50%, transparent); }
+.pyramid-legend-n { grid-row: span 2; align-self: center; font-family: var(--font-mono);
+  font-size: .6875rem; color: var(--layer); }
+.pyramid-legend-name { font-size: .9375rem; font-weight: 600; color: #e6ebf3; letter-spacing: -.01em; }
+.pyramid-legend-role { font-size: .5625rem; letter-spacing: .14em;
+  text-transform: uppercase; color: #a3b0c4; }
+
+/* Collapsed until a layer is live, and its contents are only rendered then, so
+   with no padding it has no height at all.
+
+   It can grow without holding a reserved slot because it sits BELOW the rows:
+   the connector is aimed at a measured row, and everything this pushes on
+   opens downward, away from them. */
+.pyramid-readout { margin-top: 0; padding: 0 .9rem; opacity: 0;
+  border-radius: 4px; border: 1px solid transparent; background: transparent;
+  transition: opacity .2s ease, margin-top .25s ease, padding .25s ease,
+    border-color .25s ease, background .25s ease; }
+.pyramid-readout[data-on="1"] { margin-top: .85rem; padding: .85rem .9rem; opacity: 1;
+  border-color: color-mix(in srgb, var(--layer) 40%, transparent);
+  background: color-mix(in srgb, var(--layer) 12%, transparent); }
+.pyramid-readout p { font-size: .8125rem; line-height: 1.65; color: #cdd6e2; }
+.pyramid-readout-cue { display: block; margin-top: .7rem; font-size: .75rem;
+  font-weight: 500; color: var(--layer); }
+
+/* The legend's width is a percentage of the drawing, so below a certain board
+   width it stops being wide enough to set its own rows — and clamping it to a
+   minimum would push it left over the solid. So the columns come apart here
+   instead: the legend leaves the drawing, the connector has nothing to point
+   at, and everything stacks. */
+@media (max-width: 1179px) {
+  .platform-board { grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
+  .pyramid-aside { position: static; width: 100%; margin-top: 1rem; }
+  .pyramid-leader { display: none; }
+}
+
+
+
+
+@media (max-width: 767px) {
+  .platform-stack-section { padding-block: 3.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pyramid-tier, .pyramid-motes circle { animation: none; }
+  .pyramid-motes circle { opacity: .5; }
+}
+
+/* ---- The optical line (/optical-technologies) ----
+   Two layouts this page needed and nothing else did.
+
+   .market-row: four audience notes of three words and one sentence each. As
+   .instrument-card they were tall boxes — a 2.5rem gap under the icon, a
+   three-word heading, then a line and a half of text — and in a three-column
+   grid the fourth sat alone on a row of its own. Here the icon runs inline with
+   the name and the whole thing is a quarter of the height, so four fit across
+   without anything wrapping. */
+.market-row { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--site-line); }
+.market-item { padding: 1.9rem 1.75rem; }
+.market-item + .market-item { border-left: 1px solid var(--site-line); }
+/* align-items: flex-start, not center: "Academia & Education" wraps to two
+   lines below ~1200px, and centring floats the icon into the gap between them
+   rather than sitting it beside the first word. The margin drops it to the
+   first line's cap height. */
+.market-item h3 { display: flex; align-items: flex-start; gap: .7rem;
+  font-size: 1.0625rem; line-height: 1.3; font-weight: 600; letter-spacing: -.02em; }
+.market-item h3 svg { flex-shrink: 0; margin-top: .16em; width: 1.125rem; height: 1.125rem; color: #5c6472; }
+.market-item p { margin-top: .8rem; font-size: .875rem; line-height: 1.75; color: #4b5361; }
+
+@media (max-width: 1023px) {
+  .market-row { grid-template-columns: repeat(2, 1fr); }
+  .market-item:nth-child(2n + 1) { border-left: 0; }
+  .market-item:nth-child(n + 3) { border-top: 1px solid var(--site-line); }
+}
+@media (max-width: 599px) {
+  .market-row { grid-template-columns: 1fr; }
+  .market-item + .market-item { border-left: 0; border-top: 1px solid var(--site-line); }
+}
+
+/* .product-list: the instruments as rows rather than a card grid. Four
+   products with a status, a summary and a four-point spec list each do not
+   divide into three columns, and as cards every one padded itself out to the
+   tallest. As rows each takes the height its own copy needs and the statuses
+   line up in a column a buyer can run down.
+
+   The ornament is deliberate and cheap. A spectral rule sweeps across a row on
+   hover — the same gradient .step-rule uses, which on a page about
+   multi-wavelength instruments is the one decoration that means something —
+   and the big ghosted ordinal warms to gold underneath it. Both are hover-only
+   and the row is complete without either, so nothing here is load-bearing. */
+.product-list { border-top: 1px solid var(--site-line); }
+
+.product-row { position: relative; display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 13rem; gap: 0 2.5rem;
+  padding-block: 2.6rem; border-bottom: 1px solid var(--site-line);
+  transition: background .25s ease; }
+/* White, not a tint: this section is .editorial-band-alt (#f6f7f9), so a
+   hovered row lifts out of the band rather than darkening within it. */
+.product-row:hover { background: #fff; }
+
+/* The sweep sits ON the row's own top hairline rather than beside it, so
+   nothing moves when it appears. transform, not width: width animates layout
+   on every frame, a transform does not. */
+.product-row::before { content: ""; position: absolute; inset: -1px auto auto 0;
+  height: 2px; width: 100%; background: var(--spectral);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .55s cubic-bezier(.22, .68, .3, 1); }
+.product-row:hover::before { transform: scaleX(1); }
+
+.product-n { font-family: var(--font-mono); font-size: 2.1rem; line-height: 1;
+  letter-spacing: -.05em; color: #d9dde4; transition: color .3s ease; }
+.product-row:hover .product-n { color: var(--color-gold-500); }
+
+/* The product's own icon in place of the gold dash .editorial-label draws:
+   same job in the same space, and it tells four instruments apart at a glance
+   from halfway down the page. */
+.product-kicker { display: flex; align-items: center; gap: .65rem;
+  font-family: var(--font-mono); font-size: .6875rem; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; color: #5c6472; }
+.product-kicker svg { flex-shrink: 0; width: 1.0625rem; height: 1.0625rem;
+  color: var(--color-gold-600); }
+
+.product-row h3 { margin-top: .85rem; font-size: 1.6rem; line-height: 1.15;
+  font-weight: 600; letter-spacing: -.035em; }
+.product-summary { max-width: 46rem; margin-top: .85rem; font-size: .9375rem;
+  line-height: 1.8; color: #464d5b; }
+
+.product-details { margin-top: 1.6rem; }
+/* A bordered +/- box rather than the browser's disclosure triangle, which is
+   the one piece of unstyled UA chrome left in the editorial system. */
+.product-details summary { display: inline-flex; align-items: center; gap: .7rem;
+  cursor: pointer; list-style: none;
+  font-size: .8125rem; font-weight: 500; color: var(--site-accent); }
+.product-details summary::-webkit-details-marker { display: none; }
+.product-details summary::before { content: "+"; display: grid; place-items: center;
+  width: 1.4rem; height: 1.4rem; border: 1px solid var(--site-line); border-radius: 2px;
+  font-family: var(--font-mono); font-size: .875rem; line-height: 1; color: #5c6472;
+  transition: border-color .2s, color .2s, background .2s; }
+.product-details[open] summary::before { content: "–"; }
+.product-details summary:hover::before { border-color: var(--color-gold-500);
+  color: var(--color-gold-600); background: #b8860b0d; }
+.product-details .finding-points { max-width: 46rem; margin-top: 1.2rem; }
+.product-note { max-width: 46rem; margin-top: 1rem; font-family: var(--font-mono);
+  font-size: .75rem; line-height: 1.75; color: #7a5f16; }
+
+/* The chip ProductCard carried on every optical product. It is the page's
+   standing caveat, so it stays on each row rather than only in the metadata. */
+.product-chip { font-family: var(--font-mono); font-size: .625rem; letter-spacing: .12em;
+  text-transform: uppercase; color: #5c6472; }
+.product-aside { display: flex; flex-direction: column; align-items: flex-start; gap: .85rem; }
+.product-aside .editorial-text-link svg { transition: transform .25s ease; }
+.product-row:hover .product-aside .editorial-text-link svg { transform: translate(2px, -2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .product-row::before { transition: none; }
+  .product-n, .product-aside .editorial-text-link svg { transition: none; }
+}
+
+@media (max-width: 1023px) {
+  /* The aside drops under the copy rather than squeezing it: at 13rem the third
+     column costs more than the status is worth below this width. */
+  .product-row { grid-template-columns: 3.5rem minmax(0, 1fr); }
+  .product-n { font-size: 1.75rem; }
+  .product-aside { grid-column: 2; flex-direction: row; flex-wrap: wrap;
+    align-items: center; gap: 1.1rem; margin-top: 1.6rem; }
+}
+@media (max-width: 599px) {
+  .product-row { grid-template-columns: minmax(0, 1fr); padding-block: 2.1rem; }
+  .product-n { font-size: 1.5rem; padding-bottom: .9rem; }
+  .product-row h3 { font-size: 1.35rem; }
+  .product-aside { grid-column: 1; }
 }

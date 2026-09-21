@@ -36,6 +36,38 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local-only source assets (large / unreviewed originals, never deployed)
+/_source-assets
+
+# Source decks dropped at the repo root for extraction. "For website.pptx" is
+# 445MB and carries patient identifiers burned into the images on several
+# slides — a Heidelberg report with DOB, sex and patient ID, and an Optos frame
+# with DOB and the treating site. Committing it would put PHI in git history,
+# where removing it means rewriting history.
+/*.pptx
+/*.ppt
+
+# Unfiltered deck extractions staged for review. Files here are raw clinical
+# exports: many carry burned-in patient identifiers (name, DOB, MRN) and are
+# captures from third-party devices. Anything in /public is served publicly, so
+# this folder stays ignored until images have been de-identified, rights-cleared
+# and moved to a reviewed location. See MANIFEST.csv (overlay_text column).
+/public/case-library
+
+# Full-resolution capture originals (13MB of 4073px JPEGs). The web-optimised
+# WebP frames generated from these live in /public/fundus/spectral and are the
+# only versions the site serves.
+/public/fundus/OD/aligned
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Working artifacts from review sessions, not project source. output/pdf holds a
+# 30MB team-review PDF and tmp/pdfs its page captures and build script; both are
+# regenerable and neither is deployed. The files stay on disk, just out of git.
+/output
+/tmp
+
+# Claude Code session state (lock files, scheduled tasks) — machine-local.
+/.claude
