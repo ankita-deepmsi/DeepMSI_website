@@ -1,0 +1,46 @@
+# What the Vercel CLI may upload from this working directory.
+#
+# `vercel --prod` uploads the LOCAL FOLDER, not the git repository, and it does
+# not read .gitignore. Without this file it tried to send:
+#
+#   For website.pptx                   425 MB
+#   _source-assets/For website.pptx    425 MB
+#   _source-assets/AIS Intro.pptx       10 MB
+#   output/pdf/*.pdf                    29 MB
+#
+# The first of those is the source deck, which carries patient identifiers
+# burned into images on several slides; the third is the corporate deck, marked
+# "Confidential information — not for public distribution". The 100 MB per-file
+# limit aborted the upload before either deck landed, but that was luck, not
+# design: AIS Intro.pptx is well under the limit and would have gone up.
+#
+# Nothing here is needed to build the site. Deploying from the Git integration
+# instead of the CLI avoids the problem entirely, since Vercel then builds from
+# the repository, where .gitignore already excludes all of it.
+
+# Build and dependency output — Vercel installs and builds its own.
+node_modules
+.next
+.git
+
+# Source decks and unreviewed originals. Never deployed, never needed at build.
+_source-assets
+*.pptx
+*.ppt
+
+# Review artifacts from working sessions.
+output
+tmp
+.claude
+
+# Raw clinical exports with burned-in identifiers, and full-resolution capture
+# originals. Both are already gitignored; named again here because this file is
+# read independently of .gitignore.
+public/case-library
+public/fundus/OD/aligned
+
+# Local env pulled by `vercel env pull`. Production values come from the
+# project's own environment settings, never from an uploaded file.
+.env*
+
+*.tsbuildinfo

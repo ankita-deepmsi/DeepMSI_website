@@ -71,3 +71,7 @@ next-env.d.ts
 
 # Claude Code session state (lock files, scheduled tasks) — machine-local.
 /.claude
+
+# (The Vercel CLI appends `.vercel` and `.env*` here on `vercel link` / `env
+# pull`. Both are already covered above, so this block is left as a marker
+# rather than a second set of rules.)
